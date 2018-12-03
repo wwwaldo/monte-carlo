@@ -67,8 +67,8 @@ class BoxWithCartesianBoundary():
         x, y = pt
         cx, cy = self.nearest_grid_point(pt)
 
-        deltax = cx - x
-        deltay = cy - y
+        deltax = x - cx # flipped this sign
+        deltay = y - cy 
         
         nbrs:[[int], [int]] = [None, None] # every coarse grid point has 2 neighbours
             
@@ -89,17 +89,17 @@ class BoxWithCartesianBoundary():
         # TODO: refactor this.
         if nbrs[0][0] in self.bdry_X and nbrs[0][1] in self.bdry_Y:
             bdry_pt = [self.nearest1d(x, dboundary) , cy ]
-
-            # BUG: This delta is wrong. it should be an np.norm involving (cy - y)
-            delta = np.abs( bdry_pt[0] - x )
+            delta = np.linalg.norm( bdry_pt - pt)
         
         if nbrs[1][0] in self.bdry_X and nbrs[1][1] in self.bdry_Y:
             temp = [cx, self.nearest1d(y, dboundary)]
-            if bdry_pt is None or np.abs(bdry_pt[1] - y) < delta:
+            if bdry_pt is None or np.linalg.norm( temp - pt ) < delta:
                 bdry_pt = temp
-
-        return np.round(bdry_pt,
+        
+        if bdry_pt is not None:
+            bdry_pt = np.round(bdry_pt,
                 int(np.ceil(np.abs(np.log10(dboundary)))))
+        return bdry_pt
 
 
     '''
@@ -107,6 +107,22 @@ class BoxWithCartesianBoundary():
     Check if we've moved outside the domain, 
     or if we've hit the cartesian boundary.
     '''
+
+    def is_boundary_point(self, pt):
+        X, Y = self.bdry_X, self.bdry_Y
+        
+        temp_zeros = np.zeros(len(X))
+        # The same check as get_index.
+        index = np.intersect1d( np.where(np.isclose(X - pt[0], temp_zeros)) , 
+                    np.where(np.isclose( Y - pt[1], temp_zeros)) 
+                    )
+
+        assert len(index) == 1 or len(index) == 0
+        return True if len(index) == 1 else False
+
+    def is_exterior_point(self, pt):
+        return True if self.is_outside(pt) > 0 else False
+
     def hit_boundary(self, pt):
         dboundary, h = self.dboundary, self.dh
         X, Y = self.bdry_X, self.bdry_Y
@@ -116,7 +132,7 @@ class BoxWithCartesianBoundary():
         # If the point is in a 'boundary block', it hasn't hit the boundary.        
         nbrs = self.get_grid_block_vertices(pt)        
 
-        if False: # the current point lives inside a boundary square #TODO: fix this.
+        if any( [ self.is_exterior_point(nbr) for nbr in nbrs ]): # the current point lives inside a boundary square #TODO: fix this.
             return None
 
         # is the nearest grid point also a boundary point?
@@ -147,6 +163,9 @@ class BoxWithCartesianBoundary():
         if x > xmin and x < xmax: # todo: flip this cond (better perf?)
             if y > ymin and y < ymax: 
                 return_value = -1. 
+        
+        if x == xmin or x == xmax and y == ymin or y == ymax:
+            return_value = 0.
         return return_value
 
     '''
@@ -224,10 +243,10 @@ class MonteCarloSimulator():
         
         pt_index = self.domain.get_index(pt)
 
-        for i in range(1): #self.nsamples
+        for i in range(self.nsamples): #self.nsamples
             x, y = pt # reset the point location
             
-            for j in range(1): # nsteps of random walk
+            for j in range(self.maxsteps): # nsteps of random walk
                 x, y = x + np.random.randn() * np.sqrt(dt), y + np.random.randn() * np.sqrt(dt)
                 # Did I hit the domain exterior?
 
@@ -277,9 +296,9 @@ class MonteCarloSimulator():
 
         soln = gg(X, Y)
         
-        #print( (u - soln)) # My god this convergence is slow as shit
-        #print(soln)
-        #print(u)
+        print( (u - soln)) # My god this convergence is slow as shit
+        print(soln)
+        print(u)
 
         # The L2 norm error:
         # error = (dboundary * (len(X) - 1) * np.sum(np.abs(u - soln))) - 0.5 * (np.abs((u -soln))[0] + np.abs((u - soln))[-1])
