@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import traceback
+import itertools
 
 class BoxWithCartesianBoundary():
     '''
@@ -17,6 +19,8 @@ class BoxWithCartesianBoundary():
         self.bdry_X , self.bdry_Y = BoxWithCartesianBoundary.generate_test_case(
             self.dh, self.dboundary
         )
+
+        #self.bdry_X, self.bdry_Y = BoxWithCartesianBoundary.generate_test_case_2()
     
     '''
     "indexing" functions.
@@ -33,9 +37,14 @@ class BoxWithCartesianBoundary():
         temp_zeros = np.zeros(len(X))
         
         # Throws an obscure error if a non-bdry point is passed in
-        index = np.intersect1d( np.where(np.isclose(X - pt[0], temp_zeros)) , 
+        try:
+            index = np.intersect1d( np.where(np.isclose(X - pt[0], temp_zeros)) , 
                             np.where(np.isclose( Y - pt[1], temp_zeros)) 
                             )[0]
+        except Exception as e:
+            print(f'Tried to index {pt} as boundary point:')
+            raise e
+
         return index
 
     '''
@@ -60,12 +69,19 @@ class BoxWithCartesianBoundary():
         return cx, cy
 
     def nearest_boundary_point(self, pt):
+        '''
+        Bug: The point returned may not be a real boundary point.
+        Should be fixed now.
+        '''
         h = self.dh 
         dboundary = self.dboundary
 
 
         x, y = pt
+        # is the nearest grid point also a boundary point?
         cx, cy = self.nearest_grid_point(pt)
+        if not self.is_boundary_point((cx, cy)):
+            return None
 
         deltax = x - cx # flipped this sign
         deltay = y - cy 
@@ -87,13 +103,13 @@ class BoxWithCartesianBoundary():
         delta = np.inf
 
         # TODO: refactor this.
-        if nbrs[0][0] in self.bdry_X and nbrs[0][1] in self.bdry_Y:
+        if self.is_boundary_point(nbrs[0]):
             bdry_pt = [self.nearest1d(x, dboundary) , cy ]
-            delta = np.linalg.norm( bdry_pt - pt)
+            delta = np.linalg.norm( np.array(bdry_pt) - np.array(pt))
         
-        if nbrs[1][0] in self.bdry_X and nbrs[1][1] in self.bdry_Y:
+        if self.is_boundary_point(nbrs[1]):
             temp = [cx, self.nearest1d(y, dboundary)]
-            if bdry_pt is None or np.linalg.norm( temp - pt ) < delta:
+            if bdry_pt is None or np.linalg.norm( np.array(temp) - np.array(pt) ) < delta:
                 bdry_pt = temp
         
         if bdry_pt is not None:
@@ -135,16 +151,13 @@ class BoxWithCartesianBoundary():
         if any( [ self.is_exterior_point(nbr) for nbr in nbrs ]): # the current point lives inside a boundary square #TODO: fix this.
             return None
 
-        # is the nearest grid point also a boundary point?
-        grid_point = self.nearest_grid_point(pt)
-        if grid_point[0] in self.bdry_X and grid_point[1] in self.bdry_Y:
-            bdry_pt = self.nearest_boundary_point(pt)
+        bdry_pt = self.nearest_boundary_point(pt)
 
-            # is the boundary point close enough to the original point?
-            if bdry_pt is not None:
-                dist = np.linalg.norm( bdry_pt - np.array(pt) )
-                if not dist < 2. * dboundary: # 95 % rule for stdev
-                    bdry_pt = None
+        # is the boundary point close enough to the original point?
+        if bdry_pt is not None:
+            dist = np.linalg.norm( bdry_pt - np.array(pt) )
+            if not dist < 2. * dboundary: # 95 % rule for stdev
+                bdry_pt = None
         return bdry_pt
 
     def is_outside(self, pt):
@@ -168,6 +181,47 @@ class BoxWithCartesianBoundary():
             return_value = 0.
         return return_value
 
+    @classmethod
+    def generate_test_case_2(cls):
+        dboundary = 0.0001
+        '''
+        Inputs: dx, the size of the spatial mesh.
+                dboundary, the size of the boundary mesh.
+                Boundary should be less than the spatial mesh.
+        '''
+
+        interior_x = 0.00 # only 3 interior points
+        interior_y = [0.99, 1.00, 1.01]
+
+        boundary_x = -0.01, 0.01
+        boundary_y = (0.98 + np.linspace(0.0, 0.01, 11)[:-1])
+        boundary_y = np.append( boundary_y, (0.99 + np.linspace(0.0, 0.01, 101)[:-1]) )
+        boundary_y = np.append( boundary_y, (1. + np.linspace(0.0, 0.01, 101)[:-1]) )
+        boundary_y = np.append( boundary_y, (1.01 + np.linspace(0.0, 0.01, 101)) )
+
+        X, Y = np.meshgrid( boundary_x , boundary_y )
+        X, Y = X.reshape(-1,), Y.reshape(-1,)
+
+        boundary_y = 0.98, 1.02
+        boundary_x = (-0.01 + np.linspace(0.0, 0.01, 11)[1:-1]) # truncate leftmost point so we don't duplicate
+        boundary_x = np.append(boundary_x, 0 + np.linspace(0.0, 0.01, 101)[:-1])
+
+        Xt, Yt = np.meshgrid( boundary_x, boundary_y )
+        Xt, Yt = Xt.reshape(-1,), Yt.reshape(-1,)
+
+        X, Y = np.append(X, Xt), np.append(Y, Yt)
+
+
+        #Convoluted Rounding
+        X = np.round(X ,int(np.ceil(np.abs(np.log10(dboundary)))))
+        Y = np.round(Y ,int(np.ceil(np.abs(np.log10(dboundary)))))
+
+        # convoluted check for duplicate points
+        assert( len(np.unique( np.array( 
+                            list(map( np.array, zip(X, Y) ))), axis=0)) == len(X))
+        assert np.allclose( [dboundary], [boundary_x[-1] - boundary_x[-2]])
+
+        return X, Y # The set of boundary points.
     '''
     Function which makes the only instance of this class.
     '''
@@ -225,7 +279,7 @@ class MonteCarloSimulator():
         # internal info counters
         self.ofreq, self.bfreq = 0, 0
 
-        self.nsamples = 100
+        self.nsamples = 400
         self.maxsteps = 100 # tweakable
 
         # so 95% of points take a step of size 0.5 dboundary or less
@@ -237,8 +291,6 @@ class MonteCarloSimulator():
             self.g = lambda x, y: 0. # laplacian
 
     def simulate_point(self, pt):
-        np.random.seed(2)
-
         dt = self.dt
         
         pt_index = self.domain.get_index(pt)
@@ -246,7 +298,8 @@ class MonteCarloSimulator():
         for i in range(self.nsamples): #self.nsamples
             x, y = pt # reset the point location
             
-            for j in range(self.maxsteps): # nsteps of random walk
+            for j in itertools.count():
+            #for j in range(self.maxsteps): # nsteps of random walk
                 x, y = x + np.random.randn() * np.sqrt(dt), y + np.random.randn() * np.sqrt(dt)
                 # Did I hit the domain exterior?
 
@@ -258,14 +311,14 @@ class MonteCarloSimulator():
                     self.total_boundary_values[pt_index] += self.g(x, y)
                     break
 
-                # Did I hit the grid boundary?
+                """# Did I hit the grid boundary?
                 bdry_pt = self.domain.hit_boundary( (x, y) )
                 if bdry_pt is not None:
                     self.bfreq += 1
                     index = self.domain.get_index(bdry_pt)
                     self.frequencies[pt_index, index] += 1
                     break
-
+                """
                 continue
 
         print(f" Coupled: {self.bfreq}, Outside: {self.ofreq}")
@@ -273,9 +326,9 @@ class MonteCarloSimulator():
     
     
     def simulate(self):
-        #points = zip(self.domain.bdry_X, self.domain.bdry_Y)
+        points = zip(self.domain.bdry_X, self.domain.bdry_Y)
 
-        points = [[0.01, 1.]]
+        #points = [[0.01, 1.]]
         for pt in points:
             self.simulate_point(pt)
 
@@ -284,8 +337,8 @@ class MonteCarloSimulator():
         X, Y = self.domain.bdry_X, self.domain.bdry_Y
 
         # Maybe divide by N later if the boundary values overflow
-        A = ( N * np.eye( len(X), len(X) ) - self.frequencies )
-        b = -self.total_boundary_values
+        A = ( np.eye( len(X), len(X) ) - self.frequencies / N )
+        b = self.total_boundary_values / N
 
         print(b)
 
@@ -296,19 +349,20 @@ class MonteCarloSimulator():
 
         soln = gg(X, Y)
         
-        print( (u - soln)) # My god this convergence is slow as shit
+        print( (u - soln))
         print(soln)
         print(u)
 
         # The L2 norm error:
-        # error = (dboundary * (len(X) - 1) * np.sum(np.abs(u - soln))) - 0.5 * (np.abs((u -soln))[0] + np.abs((u - soln))[-1])
+        error = (self.domain.dboundary * np.sum(np.abs(u - soln))) - 0.5 * self.domain.dboundary * (np.abs((u -soln))[0] + np.abs((u - soln))[-1])
+        print(error)
 
 if __name__ == '__main__':
     
     print("nothing here")
 
     simulator = MonteCarloSimulator(lambda x, y: 
-        x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 5.
+        1000 * (x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x) + 1.
     )
     simulator.simulate()
     simulator.solve_coupling()
