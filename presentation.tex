@@ -1,4 +1,6 @@
 \documentclass{beamer}
+\newcommand\di\partial
+\newcommand\pars[1]{\left(#1\right)}
 \usepackage{amsmath,amssymb,amsthm,bbm,bm, amsfonts}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -17,8 +19,32 @@
 % Results: Spiky Domains
 % Results: Runtime
 % Conclusions
+\begin{frame}{Laplace's Problem}
+\begin{itemize}
+\item We wish to solve Laplace's Problem.
+Here, we have some closed domain $\Omega$ with a boundary $\di\Omega$.
+We are given a function $g\pars{\vec{x}}$, defined on $\vec{x}\in\di\Omega$.
+\item We wish to find a function $u\pars{\vec{x}}$, defined on $\Omega$,
+such that $\Delta u=0$ on $\Omega$
+and such that $u\pars{\vec{x}}=g\pars{\vec{x}}$ on $\di\Omega$.
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Extension: Interior Finite Differences}
-However, using only random walks can be very slow and inefficient.
+\begin{itemize}
+\item However, using only random walks can be very slow and inefficient.
 Having to do many random walks for each point we can about can be very slow.
+\item Instead, we can combine methods.
+Let us define a Cartesian grid on the inside of our boundary,
+as large as possible.
+Now, if we knew the boundary values on this Cartesian grid,
+we'd be able to run a finite differences scheme
+and solve the problem at every point we care about.
+\item And to find the values on the boundary of the Cartesian grid,
+we can use the random walks.
+Now, the amount of random walks we need to do scales with $h^{-1}$,
+instead of $h^{-2}$ as it was earlier.
+This saves us a lot of work.
+\end{itemize}
 \end{frame}
 \end{document}
