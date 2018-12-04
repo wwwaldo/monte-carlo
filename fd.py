@@ -14,12 +14,12 @@ def grid_gen(boundary_func, min_xs, max_xs, Ns):
         for j in range(Ns[1]):
             p = np.array([i*hs[0], j*hs[1]]) + min_xs
             p = grid_to_point((i,j))
-            if boundary_func(p):
+            if boundary_func(p) < 0:
                 b1 = boundary_func(grid_to_point((i,j+1)))
                 b2 = boundary_func(grid_to_point((i,j-1)))
                 b3 = boundary_func(grid_to_point((i+1,j)))
                 b4 = boundary_func(grid_to_point((i-1,j)))
-                if b1 and b2 and b3 and b4:
+                if b1 < 0 and b2 < 0 and b3 < 0 and b4 < 0:
                     grid_to_vec[(i,j)] = k
                     vec_to_grid.append((i,j))
                     k += 1
@@ -45,20 +45,21 @@ def gen_L(find_val, poisson_f, grid_to_vec, vec_to_grid, boundary, grid_to_point
                 L[i,j] = 1
             else:
                 if boundary[new_p] is None:
-                    boundary[new_p] = find_val(grid_to_point(new_p))
+                    boundary[new_p] = find_val(new_p)
                 b[i] += -boundary[new_p]
     return L.tocsr(), b.tocsr()
 
-boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] < 1
-N = 100
-grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1,-1]), np.array([1,1]), np.array([N+1,N+1]))
+if __name__ == "__main__":
+    boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
+    N = 100
+    grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1,-1]), np.array([1,1]), np.array([N+1,N+1]))
 
-# f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1]
-# g = lambda x: 0
-f = lambda x: x[0]**2 + x[1]**2
-g = lambda x: -4
-L, b = gen_L(f, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, 2/N)
+    f = lambda x: (lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1])(grid_to_point(x))
+    g = lambda x: 0
+    # f = lambda x: x[0]**2 + x[1]**2
+    # g = lambda x: -4
+    L, b = gen_L(f, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, 2/N)
 
-x = sppl.spsolve(L, b)
-x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
-print(np.max(np.abs(x-x_true)))
+    x = sppl.spsolve(L, b)
+    x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
+    print(np.max(np.abs(x-x_true)))
