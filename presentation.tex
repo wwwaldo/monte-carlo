@@ -11,10 +11,38 @@
 % Laplace's Problem
 % Poisson's Problem (A Generalization)
 % Possible Approaches (Finite Whatever)
+\begin{frame}{Finite Differences}
+One common approach: solve using the 2D discrete Laplacian.
+	\[ L = \frac{1}{h^2} \begin{bmatrix} 
+		0 & 1 & 0 \
+		1 & -4& 1 \
+		0 & 1 & 0 
+	\end{bmatrix} \]
+Pros: solving becomes a matrix solve
+Boundary conditions are encoded into a vector
+Cons: Needs a Cartesian grid
+
+Alternatives: Finite elements, finite volumes.
+\end{frame}
 % Random Walks
+\begin{frame}{Random Walks in a nutshell}
+A "normally distributed" stochastic process in time, i.e.
+	
+$E(B(t)) \sim N(0, t)$ for all times $t \geq 0$
+\end{frame}
+
+\begin{frame}{Laplace's Equation with Random Walks}
+Ito's formula:
+$u(x) = E^x[ g(\mathbf{B}(T))] + \frac{1}{2} E^x \left[ \int_0^T f(B(s))ds \right]$ {#eq:rw}
+
+For Laplace's, take the mean over the boundary values, weighted by frequency of random walks.
+\end{frame}
 % Why It Works (In Theory)
+
 % Extensions: Interior Finite Differences
+
 % Extensions: Self-Contacting Boundary Coupling
+
 % Extensions: Walk On Spheres
 % Results: Accuracy
 % Results: Spiky Domains
