@@ -371,9 +371,9 @@ if __name__ == '__main__':
     boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
     boundary_func = squiggly_domain(0.45)
 
-    N = 100
+    N = 150
     nsamples = 400
-    grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1,-1]), np.array([1,1]), np.array([N+1,N+1]))
+    grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
     h = 2/N
 
     domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
