@@ -1,5 +1,5 @@
 \documentclass{beamer}
-\newcommand\di\partial
+\newcommand\di{\partial}
 \newcommand\pars[1]{\left(#1\right)}
 \newcommand\mat[1]{#1}
 \usepackage{amsmath,amssymb,amsthm,bbm,bm, amsfonts}
@@ -10,44 +10,6 @@
 % Slide Outline:
 % Laplace's Problem
 % Poisson's Problem (A Generalization)
-% Possible Approaches (Finite Whatever)
-\begin{frame}{Finite Differences}
-One common approach: solve using the 2D discrete Laplacian.
-	\[ L = \frac{1}{h^2} \begin{bmatrix} 
-		0 & 1 & 0 \
-		1 & -4& 1 \
-		0 & 1 & 0 
-	\end{bmatrix} \]
-Pros: solving becomes a matrix solve
-Boundary conditions are encoded into a vector
-Cons: Needs a Cartesian grid
-
-Alternatives: Finite elements, finite volumes.
-\end{frame}
-% Random Walks
-\begin{frame}{Random Walks in a nutshell}
-A "normally distributed" stochastic process in time, i.e.
-	
-$E(B(t)) \sim N(0, t)$ for all times $t \geq 0$
-\end{frame}
-
-\begin{frame}{Laplace's Equation with Random Walks}
-Ito's formula:
-$u(x) = E^x[ g(\mathbf{B}(T))] + \frac{1}{2} E^x \left[ \int_0^T f(B(s))ds \right]$ {#eq:rw}
-
-For Laplace's, take the mean over the boundary values, weighted by frequency of random walks.
-\end{frame}
-% Why It Works (In Theory)
-
-% Extensions: Interior Finite Differences
-
-% Extensions: Self-Contacting Boundary Coupling
-
-% Extensions: Walk On Spheres
-% Results: Accuracy
-% Results: Spiky Domains
-% Results: Runtime
-% Conclusions
 \begin{frame}{Laplace's Problem}
 \begin{itemize}
 \item We wish to solve \emph{Laplace's Problem}.
@@ -62,6 +24,36 @@ and where we require that $\Delta u\pars{\vec{x}}=f\pars{\vec{x}}$ on $\Omega$.
 \end{itemize}
 \end{frame}
 
+% Possible Approaches (Finite Whatever)
+\begin{frame}{Finite Differences}
+One common approach: solve using the 2D discrete Laplacian.
+	\[ L = \frac{1}{h^2} \begin{bmatrix}
+		0 & 1 & 0 \\
+		1 & -4& 1 \\
+		0 & 1 & 0
+	\end{bmatrix} \]
+Pros: solving becomes a matrix solve
+Boundary conditions are encoded into a vector
+Cons: Needs a Cartesian grid
+
+Alternatives: Finite elements, finite volumes.
+\end{frame}
+% Random Walks
+\begin{frame}{Random Walks in a nutshell}
+A ``normally distributed'' stochastic process in time, i.e.
+
+$E(B(t)) \sim N(0, t)$ for all times $t \geq 0$
+\end{frame}
+
+\begin{frame}{Laplace's Equation with Random Walks}
+Ito's formula:
+$u(x) = E^x[ g(\mathbf{B}(T))] + \frac{1}{2} E^x \left[ \int_0^T f(B(s))ds \right]$
+
+For Laplace's, take the mean over the boundary values, weighted by frequency of random walks.
+\end{frame}
+% Why It Works (In Theory)
+
+% Extensions: Interior Finite Differences
 \begin{frame}{Extension: Interior Finite Differences}
 \begin{itemize}
 \item However, using only random walks can be very slow and inefficient.
@@ -80,6 +72,7 @@ This saves us a lot of work.
 \end{itemize}
 \end{frame}
 
+% Extensions: Self-Contacting Boundary Coupling
 \begin{frame}{Extensions: Self-Contacting Boundary Coupling}
 \begin{itemize}
 \item To further improve this,
@@ -93,11 +86,18 @@ should be the expected value of a random walk from this boundary point.
 \item We thus need to solve an implicit formula
 to find the values on the grid boundary.
 If $\mat{F}$ is a coupling matrix,
-with $F_{i,j}$ begin the proportion of random walks
+with $F_{i,j}$ begin the number of random walks
 starting at boundary point $i$ and ending at boundary point $j$,
 then we wish to solve
-$$\vec{u}=\mat{F}\vec{u}+\vec{b},$$
-where $\vec{b}$ is a vector of average values obtained via random walks.
+$$\vec{u}=\frac{1}{K}\mat{F}\vec{u}+\frac{1}{K}\vec{b},$$
+where $\vec{b}$ is a vector of total values obtained via random walks,
+and $K$ is the number of random walks performed.
 \end{itemize}
 \end{frame}
+
+% Extensions: Walk On Spheres
+% Results: Accuracy
+% Results: Spiky Domains
+% Results: Runtime
+% Conclusions
 \end{document}
