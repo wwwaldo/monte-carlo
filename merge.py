@@ -163,7 +163,7 @@ class SetWithCartesianBoundary():
 
         X, Y = np.linspace(-1.5, 1.5), np.linspace(-1.5, 1.5) # hard-coded
         X, Y = np.meshgrid(X, Y)
-        outside_v = squiggly_domain(0.45, True)
+        outside_v = is_outside_fn(0.45, True)
 
         ax.contour(X, Y, outside_v(X, Y), levels=[0.0])
         plt.show()
