@@ -1,8 +1,13 @@
+import matplotlib as mpl
+mpl.use('Agg')
 import numpy as np
 import matplotlib.pyplot as plt
 import traceback
 import itertools
 from fd import *
+
+fprefix = "circle"
+fprefix = "squiggly"
 
 class SetWithCartesianBoundary():
     '''
@@ -159,14 +164,15 @@ class SetWithCartesianBoundary():
 
     def visualize_boundary(self):
         fig, ax = plt.subplots()
-        ax.scatter(self.bdry_X, self.bdry_Y)
+        ax.scatter(self.bdry_X, self.bdry_Y, s=0.1)
 
         X, Y = np.linspace(-1.5, 1.5), np.linspace(-1.5, 1.5) # hard-coded
         X, Y = np.meshgrid(X, Y)
-        outside_v = squiggly_domain(0.45, True)
+        outside_v = self.is_outside
 
-        ax.contour(X, Y, outside_v(X, Y), levels=[0.0])
-        plt.show()
+        ax.contour(X, Y, outside_v((X, Y)), levels=[0.0])
+        # plt.show()
+        plt.savefig(fprefix + "_"+str(h)+".pdf")
 
     @classmethod
     def generate_test_case_2(cls):
@@ -386,67 +392,69 @@ if __name__ == '__main__':
     import shelve 
     data = None
     
-    with shelve.open('data.dat') as shelf:
-        try:
-            data = shelf['squiggly_N100_nsamples_400']
-        except Exception as e:
-            print("Need to regenerate data")
-    
-    print("nothing here")
+    for N in [40,150]:#,500]:
+    # for N in [50,100,200]:
+        for nsamples in [25, 100, 400]:
+            print(N,nsamples)
+            data = None
+            dstring = fprefix + 'data.dat'
+            if fprefix == 'squiggly':
+                dstring = 'data.dat'
+            fstring = fprefix + '_N'+str(N)+'_nsamples_'+str(nsamples)
+            with shelve.open(dstring) as shelf:
+                try:
+                    data = shelf[fstring]
+                except Exception as e:
+                    print("Need to regenerate data")
 
-    boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
-    boundary_func = squiggly_domain(0.45)
+            boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
+            boundary_func = squiggly_domain(0.45)
+            h = 2/N
+            # grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.0,-1.0]), np.array([1.0,1.0]), np.array([N+1,N+1]))
+            grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
 
-    N = 150
-    nsamples = 400
-    grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
-    h = 2/N
+            domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
+            domain.visualize_boundary()
+            
+            f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1] + 1
+            g = lambda x: 0
+            # f = lambda x: x[0]**2 + x[1]**2
+            # g = lambda x: -4
 
-    domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
+            simulator = MonteCarloSimulator(domain, nsamples,
+                lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
+            )
 
-    domain.visualize_boundary()
-    
+            if data is None:
+                simulator.simulate()
+                u = simulator.solve_coupling()
 
+                # shelve the data 
+                with shelve.open(dstring) as shelf:
+                    shelf[fstring] = u
+                data = u
 
-    f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1] + 1
-    g = lambda x: 0
-    # f = lambda x: x[0]**2 + x[1]**2
-    # g = lambda x: -4
+            u = data
+            def find_val(p):
+                return u[domain.bdry_dict[p]]
 
-    simulator = MonteCarloSimulator(domain, nsamples,
-        lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
-    )
+            L, b = gen_L(find_val, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, h)
 
-    if data is None:
-        simulator.simulate()
-        u = simulator.solve_coupling()
-
-        # shelve the data 
-        import shelve 
-        with shelve.open('data.dat') as shelf:
-            shelf['squiggly_N100_nsamples_400'] = u
-        data = u
-
-    u = data
-
-    def find_val(p):
-        return u[domain.bdry_dict[p]]
-
-    L, b = gen_L(find_val, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, h)
-
-    x = sppl.spsolve(L, b)
-    x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
-    print(np.max(np.abs(x-x_true)))
-    print(np.max(np.abs(x-x_true)/x_true))
+            x = sppl.spsolve(L, b)
+            x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
+            print(np.max(np.abs(x-x_true)))
+            # print(np.max(np.abs(x-x_true)/x_true))
+            # print(np.mean(np.abs(x-x_true)/x_true))
 
 
-    find_val_exact = lambda x: f(grid_to_point(x))
-    for k in boundary:
-        boundary[k] = None
+            find_val_exact = lambda x: f(grid_to_point(x))
+            for k in boundary:
+                boundary[k] = None
 
-    L, b = gen_L(find_val_exact, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, h)
+            L, b = gen_L(find_val_exact, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, h)
 
-    x = sppl.spsolve(L, b)
-    x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
-    print(np.max(np.abs(x-x_true)))
-    print(np.max(np.abs(x-x_true)/x_true))
+            x = sppl.spsolve(L, b)
+            x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
+            print(np.max(np.abs(x-x_true)))
+            # print(np.max(np.abs(x-x_true)/x_true))
+            # print(np.mean(np.abs(x-x_true)/x_true))
