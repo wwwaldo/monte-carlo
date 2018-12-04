@@ -157,6 +157,17 @@ class SetWithCartesianBoundary():
                 bdry_pt = None
         return bdry_pt
 
+    def visualize_boundary(self):
+        fig, ax = plt.subplots()
+        ax.scatter(self.bdry_X, self.bdry_Y)
+
+        X, Y = np.linspace(-1.5, 1.5), np.linspace(-1.5, 1.5) # hard-coded
+        X, Y = np.meshgrid(X, Y)
+        outside_v = squiggly_domain(0.45, True)
+
+        ax.contour(X, Y, outside_v(X, Y), levels=[0.0])
+        plt.show()
+
     @classmethod
     def generate_test_case_2(cls):
         dboundary = 0.0001
@@ -266,6 +277,7 @@ class MonteCarloSimulator():
         else:
             self.g = lambda x, y: 0. # laplacian
 
+
     def simulate_point(self, pt):
         dt = self.dt
         
@@ -345,51 +357,67 @@ class MonteCarloSimulator():
         return u
 
 
-def squiggly_domain(spikiness):
+def squiggly_domain(spikiness, meshgrid=False):
+    if meshgrid: # for compatibility
+        def squiggly(X, Y):
+            Z = (X ** 2 + Y ** 2 ) 
+            theta = np.arctan2( X, Y )
+            for i in range(3, 7):
+                Z -= (1. / ((X ** 2 + Y ** 2) * (0.5 * i)) ) * np.abs(np.sin(spikiness * np.pi * i * theta))
+            return Z
+    else:
+        def squiggly(pt):
+            X, Y = pt
+            Z = (X ** 2 + Y ** 2 ) 
 
-    def squiggly(pt):
-        X, Y = pt
-        Z = (X ** 2 + Y ** 2 ) 
+            if np.allclose(pt, 0):
+                return -100
 
-        if np.allclose(pt, 0):
-            return -100
+            theta = np.arctan2( X, Y )
+            
 
-        theta = np.arctan2( X, Y )
-        
-
-        for i in range(3, 7):
-            Z -= (1. / ((X ** 2 + Y ** 2) * (0.5 * i)) ) * np.abs(np.sin(spikiness * np.pi * i * theta))
-        return Z
-    
+            for i in range(3, 7):
+                Z -= (1. / ((X ** 2 + Y ** 2) * (0.5 * i)) ) * np.abs(np.sin(spikiness * np.pi * i * theta))
+            return Z
     return squiggly
 
 
 if __name__ == '__main__':
     import shelve 
     data = None
+    
     with shelve.open('data.dat') as shelf:
-        data = shelf['squiggly_N100_nsamples_400']
+        try:
+            data = shelf['squiggly_N100_nsamples_400']
+        except Exception as e:
+            print("Need to regenerate data")
+    
+    print("nothing here")
+
+    boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
+    boundary_func = squiggly_domain(0.45)
+
+    N = 150
+    nsamples = 400
+    grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
+    h = 2/N
+
+    domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
+
+    domain.visualize_boundary()
+    
+
+
+    f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1] + 1
+    g = lambda x: 0
+    # f = lambda x: x[0]**2 + x[1]**2
+    # g = lambda x: -4
+
+    simulator = MonteCarloSimulator(domain, nsamples,
+        lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
+    )
+
     if data is None:
-        print("nothing here")
-
-        boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
-        boundary_func = squiggly_domain(0.45)
-
-        N = 150
-        nsamples = 400
-        grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
-        h = 2/N
-
-        domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
-
-        f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1] + 1
-        g = lambda x: 0
-        # f = lambda x: x[0]**2 + x[1]**2
-        # g = lambda x: -4
-
-        simulator = MonteCarloSimulator(domain, nsamples,
-            lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
-        )
         simulator.simulate()
         u = simulator.solve_coupling()
 
