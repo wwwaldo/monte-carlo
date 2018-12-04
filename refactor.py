@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import traceback
 import itertools
 
+
+
+
+
 class BoxWithCartesianBoundary():
     '''
     Params for this test box.
@@ -34,12 +38,11 @@ class BoxWithCartesianBoundary():
 
     def get_index(self, pt):
         X, Y = self.bdry_X, self.bdry_Y
-        temp_zeros = np.zeros(len(X))
         
         # Throws an obscure error if a non-bdry point is passed in
         try:
-            index = np.intersect1d( np.where(np.isclose(X - pt[0], temp_zeros)) , 
-                            np.where(np.isclose( Y - pt[1], temp_zeros)) 
+            index = np.intersect1d( np.where(np.isclose(X, pt[0])) , 
+                            np.where(np.isclose(Y, pt[1])) 
                             )[0]
         except Exception as e:
             print(f'Tried to index {pt} as boundary point:')
@@ -54,18 +57,14 @@ class BoxWithCartesianBoundary():
     '''
     # TODO: refactor other nearest functions in terms of this one
     def nearest1d(self, x, h):
-
-        basex = h * np.floor( x / h )
-        cx = h * np.round( (x / h) % 1 ) + basex
-        return cx
+        return h * np.round(x / h)
 
     def nearest_grid_point(self, pt):
         x, y = pt
         h = self.dh
 
-        basex, basey = h * np.floor( x / h ), h * np.floor( y / h )
-        cx = h * np.round( (x / h) % 1 ) + basex
-        cy = h * np.round( (y / h) % 1 ) + basey
+        cx = h * np.round(x / h)
+        cy = h * np.round(y / h)
         return cx, cy
 
     def nearest_boundary_point(self, pt):
@@ -113,8 +112,7 @@ class BoxWithCartesianBoundary():
                 bdry_pt = temp
         
         if bdry_pt is not None:
-            bdry_pt = np.round(bdry_pt,
-                int(np.ceil(np.abs(np.log10(dboundary)))))
+            bdry_pt = dboundary * np.round(np.array(bdry_pt) / dboundary)
         return bdry_pt
 
 
@@ -127,17 +125,16 @@ class BoxWithCartesianBoundary():
     def is_boundary_point(self, pt):
         X, Y = self.bdry_X, self.bdry_Y
         
-        temp_zeros = np.zeros(len(X))
         # The same check as get_index.
-        index = np.intersect1d( np.where(np.isclose(X - pt[0], temp_zeros)) , 
-                    np.where(np.isclose( Y - pt[1], temp_zeros)) 
+        index = np.intersect1d( np.where(np.isclose(X, pt[0])) , 
+                    np.where(np.isclose(Y, pt[1])) 
                     )
 
         assert len(index) == 1 or len(index) == 0
-        return True if len(index) == 1 else False
+        return (len(index) == 1)
 
     def is_exterior_point(self, pt):
-        return True if self.is_outside(pt) > 0 else False
+        return (self.is_outside(pt) > 0)
 
     def hit_boundary(self, pt):
         dboundary, h = self.dboundary, self.dh
@@ -311,14 +308,14 @@ class MonteCarloSimulator():
                     self.total_boundary_values[pt_index] += self.g(x, y)
                     break
 
-                """# Did I hit the grid boundary?
+                # Did I hit the grid boundary?
                 bdry_pt = self.domain.hit_boundary( (x, y) )
-                if bdry_pt is not None:
+                if bdry_pt is not None and not np.allclose(bdry_pt,pt):
                     self.bfreq += 1
                     index = self.domain.get_index(bdry_pt)
                     self.frequencies[pt_index, index] += 1
                     break
-                """
+                
                 continue
 
         print(f" Coupled: {self.bfreq}, Outside: {self.ofreq}")
@@ -339,6 +336,8 @@ class MonteCarloSimulator():
         # Maybe divide by N later if the boundary values overflow
         A = ( np.eye( len(X), len(X) ) - self.frequencies / N )
         b = self.total_boundary_values / N
+        # A = ( np.eye( len(X), len(X) ))
+        # b = self.total_boundary_values / N + self.frequencies.dot(self.total_boundary_values) / N / N
 
         print(b)
 
@@ -348,13 +347,15 @@ class MonteCarloSimulator():
         gg = np.vectorize(self.g)
 
         soln = gg(X, Y)
+
+        print(self.frequencies)
         
         print( (u - soln))
         print(soln)
         print(u)
 
         # The L2 norm error:
-        error = (self.domain.dboundary * np.sum(np.abs(u - soln))) - 0.5 * self.domain.dboundary * (np.abs((u -soln))[0] + np.abs((u - soln))[-1])
+        error = ((self.domain.dboundary * np.sum(np.abs(u - soln))) - 0.5 * self.domain.dboundary * (np.abs((u -soln))[0] + np.abs((u - soln))[-1]))/len(X)
         print(error)
 
 if __name__ == '__main__':
