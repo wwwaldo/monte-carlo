@@ -6,7 +6,14 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \setbeamertemplate{footline}[frame number]
+\title{Solving Laplace's Problem Via Random Walks}
+\author{Caroline Lin and Dmitry Paramonov}
+\date{December 4th, 2018}
+
 \begin{document}
+\begin{frame}
+  \titlepage%
+\end{frame}
 % Slide Outline:
 % Laplace's Problem
 % Poisson's Problem (A Generalization)
@@ -32,9 +39,11 @@ One common approach: solve using the 2D discrete Laplacian.
 		1 & -4& 1 \\
 		0 & 1 & 0
 	\end{bmatrix} \]
-Pros: solving becomes a matrix solve
-Boundary conditions are encoded into a vector
-Cons: Needs a Cartesian grid
+\begin{itemize}
+\item Pros: solving becomes a matrix solve
+\item Pros: Boundary conditions are encoded into a vector
+\item Cons: Needs a Cartesian grid
+\end{itemize}
 
 Alternatives: Finite elements, finite volumes.
 \end{frame}
@@ -56,46 +65,38 @@ For Laplace's, take the mean over the boundary values, weighted by frequency of 
 % Extensions: Interior Finite Differences
 \begin{frame}{Extension: Interior Finite Differences}
 \begin{itemize}
-\item However, using only random walks can be very slow and inefficient.
-Having to do many random walks for each point we can about can be very slow.
-\item Instead, we can combine methods.
-Let us define a Cartesian grid on the inside of our boundary,
-as large as possible.
-Now, if we knew the boundary values on this Cartesian grid,
-we'd be able to run a finite differences scheme
-and solve the problem at every point we care about.
-\item And to find the values on the boundary of the Cartesian grid,
-we can use the random walks.
-Now, the amount of random walks we need to do scales with $h^{-1}$,
-instead of $h^{-2}$ as it was earlier.
-This saves us a lot of work.
+\item However, random walks are slow.
+% \item However, using only random walks can be very slow and inefficient.
+% Having to do many random walks for each point we can about can be very slow.
+\item Instead, define a Cartesian grid within the main boundary.
+\item Can use finite differences on the inside of this grid.
+\item The boundary values can be found using random walks.
+\item Amount of random walks now scales with $h^{-1}$, instead of $h^{-2}$.
 \end{itemize}
 \end{frame}
 
 % Extensions: Self-Contacting Boundary Coupling
 \begin{frame}{Extensions: Self-Contacting Boundary Coupling}
 \begin{itemize}
-\item To further improve this,
-we can introduce coupling between the grid points.
-If a random walk touches the boundary of the Cartesian grid,
-then we can stop the random walk early,
-and instead just add a \emph{coupling} term.
-\item This coupling term relates the fact that certain random walks
-touched another boundary point, so the expected value of that random walk
-should be the expected value of a random walk from this boundary point.
-\item We thus need to solve an implicit formula
-to find the values on the grid boundary.
-If $\mat{F}$ is a coupling matrix,
-with $F_{i,j}$ begin the number of random walks
-starting at boundary point $i$ and ending at boundary point $j$,
-then we wish to solve
+\item Furthermore, we can add coupling to the grid points.
+\item If a random walk touches the interior boundary,
+then the expected value of that random walk
+is the expected value of a random walk starting at this new point.
+\item We thus store an extra matrix $\mat{F}$.
+$F_{i,j}$ is the number of random walks starting at boundary point $i$
+and ending at boundary point $j$.
+If $K$ is the number of random walks performed
+and $\vec{b}$ is the vector of total values obtain by random walks,
+we solve
 $$\vec{u}=\frac{1}{K}\mat{F}\vec{u}+\frac{1}{K}\vec{b},$$
-where $\vec{b}$ is a vector of total values obtained via random walks,
-and $K$ is the number of random walks performed.
 \end{itemize}
 \end{frame}
 
 % Extensions: Walk On Spheres
+\begin{frame}{Extensions: Walk On Spheres}
+\begin{itemize}
+\end{itemize}
+\end{frame}
 % Results: Accuracy
 % Results: Spiky Domains
 % Results: Runtime
