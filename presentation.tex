@@ -65,11 +65,12 @@ should be the expected value of a random walk from this boundary point.
 \item We thus need to solve an implicit formula
 to find the values on the grid boundary.
 If $\mat{F}$ is a coupling matrix,
-with $F_{i,j}$ begin the proportion of random walks
+with $F_{i,j}$ begin the number of random walks
 starting at boundary point $i$ and ending at boundary point $j$,
 then we wish to solve
-$$\vec{u}=\mat{F}\vec{u}+\vec{b},$$
-where $\vec{b}$ is a vector of average values obtained via random walks.
+$$\vec{u}=\frac{1}{K}\mat{F}\vec{u}+\frac{1}{K}\vec{b},$$
+where $\vec{b}$ is a vector of total values obtained via random walks,
+and $K$ is the number of random walks performed.
 \end{itemize}
 \end{frame}
 \end{document}
