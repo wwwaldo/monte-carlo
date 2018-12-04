@@ -33,7 +33,7 @@ and where we require that $\Delta u\pars{\vec{x}}=f\pars{\vec{x}}$ on $\Omega$.
 
 % Possible Approaches (Finite Whatever)
 \begin{frame}{Finite Differences}
-One common approach: solve using the 2D discrete Laplacian.
+One possible approach: solve using the 2D discrete Laplacian.
 	\[ L = \frac{1}{h^2} \begin{bmatrix}
 		0 & 1 & 0 \\
 		1 & -4& 1 \\
@@ -48,19 +48,18 @@ One common approach: solve using the 2D discrete Laplacian.
 Alternatives: Finite elements, finite volumes.
 \end{frame}
 % Random Walks
+% Why It Works (In Theory)
 \begin{frame}{Random Walks in a nutshell}
 A ``normally distributed'' stochastic process in time, i.e.
 
 $E(B(t)) \sim N(0, t)$ for all times $t \geq 0$
-\end{frame}
 
-\begin{frame}{Laplace's Equation with Random Walks}
 Ito's formula:
 $u(x) = E^x[ g(\mathbf{B}(T))] + \frac{1}{2} E^x \left[ \int_0^T f(B(s))ds \right]$
 
 For Laplace's, take the mean over the boundary values, weighted by frequency of random walks.
+Why it works heuristically: Laplace's equation models a diffusion process. 
 \end{frame}
-% Why It Works (In Theory)
 
 % Extensions: Interior Finite Differences
 \begin{frame}{Extension: Interior Finite Differences}
@@ -103,7 +102,31 @@ are distributed the same as a random walk until the boundary.
 \end{itemize}
 \end{frame}
 % Results: Accuracy
+Results for the circle, no coupling
+N is the number of points in each dimension.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+	\hline
+	N & K & Max abs err & Max rel err & Mean rel err \\  
+	\hline 
+	50 & 25 & 0.1167 & 21.6 & 0.033474 \\
+	50 & 100 & 0.07035 & 8.1546 & 0.02415 \\
+	50 & 400 & 0.03810 & 20.683& 0.0302 \\
+	100 & 25 & 0.1176 & 36.625 & 0.01340 \\
+	100 & 100 & 0.06578 & 7.22489 & 0.00755 \\
+	100 & 400 & 0.01781 & 5.2412 & 0.002187 \\
+	50 & "$\inf$" & 1.22e-14 & 2.5057e-12 & 9.2972e-15 \\
+	100 & "$\inf$" & 5.2402e-14 & 1.1273e-11 & 3.3339e-14 \\
+	\hline
+\end{tabular}
+\end{center}
+
+Interpretation:
+
 % Results: Spiky Domains
+
+
 % Results: Runtime
 % Conclusions
 \end{document}
