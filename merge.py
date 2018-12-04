@@ -365,35 +365,41 @@ def squiggly_domain(spikiness):
 
 
 if __name__ == '__main__':
-    
-    print("nothing here")
-
-    boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
-    boundary_func = squiggly_domain(0.45)
-
-    N = 150
-    nsamples = 400
-    grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
-    h = 2/N
-
-    domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
-
-    f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1] + 1
-    g = lambda x: 0
-    # f = lambda x: x[0]**2 + x[1]**2
-    # g = lambda x: -4
-
-    simulator = MonteCarloSimulator(domain, nsamples,
-        lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
-    )
-    simulator.simulate()
-    u = simulator.solve_coupling()
-
-    # shelve the data 
     import shelve 
+    data = None
     with shelve.open('data.dat') as shelf:
-        shelf['squiggly_N100_nsamples_400'] = u
+        data = shelf['squiggly_N100_nsamples_400']
+    if data is None:
+        print("nothing here")
 
+        boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
+        boundary_func = squiggly_domain(0.45)
+
+        N = 150
+        nsamples = 400
+        grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
+        h = 2/N
+
+        domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
+
+        f = lambda x: x[0]**3 + x[1]**3 - 3*x[0]*x[0]*x[1] - 3*x[0]*x[1]*x[1] + 1
+        g = lambda x: 0
+        # f = lambda x: x[0]**2 + x[1]**2
+        # g = lambda x: -4
+
+        simulator = MonteCarloSimulator(domain, nsamples,
+            lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
+        )
+        simulator.simulate()
+        u = simulator.solve_coupling()
+
+        # shelve the data 
+        import shelve 
+        with shelve.open('data.dat') as shelf:
+            shelf['squiggly_N100_nsamples_400'] = u
+        data = u
+
+    u = data
 
     def find_val(p):
         return u[domain.bdry_dict[p]]
