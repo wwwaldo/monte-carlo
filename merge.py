@@ -389,6 +389,12 @@ if __name__ == '__main__':
     simulator.simulate()
     u = simulator.solve_coupling()
 
+    # shelve the data 
+    import shelve 
+    with shelve.open('data.dat') as shelf:
+        shelf['squiggly_N100_nsamples_400'] = u
+
+
     def find_val(p):
         return u[domain.bdry_dict[p]]
 
