@@ -99,6 +99,24 @@ $$\vec{u}=\frac{1}{K}\mat{F}\vec{u}+\frac{1}{K}\vec{b},$$
 \end{itemize}
 \end{frame}
 % Results: Accuracy
+
+\begin{frame}
+	\begin{centering}
+	\includegraphics[width=0.8\textwidth]{circle_04.pdf}
+	\end{centering}
+\end{frame}
+\begin{frame}
+	\begin{centering}
+	\includegraphics[width=0.8\textwidth]{circle_02.pdf}
+	\end{centering}
+\end{frame}
+\begin{frame}
+	\begin{centering}
+	\includegraphics[width=0.8\textwidth]{circle_01.pdf}
+	\end{centering}
+\end{frame}
+
+\begin{frame}
 Results for the circle, no coupling
 N is the number of points in each dimension.
 
@@ -118,12 +136,51 @@ N is the number of points in each dimension.
 	\hline
 \end{tabular}
 \end{center}
-
-Interpretation:
+\end{frame}
 
 % Results: Spiky Domains
 
+\begin{frame}
+	\begin{centering}
+	\includegraphics[width=0.8\textwidth]{squiggly_05.pdf}
+	\end{centering}
+\end{frame}
+\begin{frame}
+	\begin{centering}
+	\includegraphics[width=0.8\textwidth]{squiggly_013.pdf}
+	\end{centering}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		N & K & Max abs err & Max rel err & Mean rel err \\  
+		\hline 
+		40 & 25 & 0.1769 & 1.4410 & 0.0435 \\
+		40 & 100 & 0.06414 & 0.5077 & 0.0225 \\
+		50 & 400 & 0.04473 & 0.4936 & 0.00215 \\
+		150 & 25 & 0.1156 & NA & NA \\
+		150 & 100 & 0.0548 & NA & NA \\
+		150 & 400 & 0.02929 & NA & NA \\
+		40 & "$\inf$" & 1.77e-15 & 5.3062e-15 & 3.4504e-16 \\ 
+		150 & "$\inf$" & 1.8318e-14 & NA & NA \\
+		\hline
+	\end{tabular}
+	\end{center}
+\end{frame}
 
 % Results: Runtime
+
+
+% TODOs
+\begin{frame}{Things we didn't have time for}
+	\begin{itemize}
+		\item Random-walk acceleration on the GPU
+		\item Can we improve the coupling?
+		\item Profiling Finite-Elements against Random Walk on ill-formed domain
+	\end{itemize}
+\end{frame}
+
 % Conclusions
 \end{document}
