@@ -61,11 +61,96 @@ Use finite differences to compute the result.
 
 ### The finite difference operator.
 
-Here it is.
+However, the above method has several flaws.
+Notably, a random walk takes a lot of time to converge.
+Furthermore, work is not reusable between points.
+After solving the problem at many points,
+solving the problem an another point
+requires running many random walks all over again.
+
+To avoid this, we can use finite differences
+to vastly cut down on the amount of random walks we have to perform.
+
+We begin by constructing a mesh of points within our desired boundary.
+Each point will then have 4 neighbours, the points closest to it,
+one in each direction.
+
+We classify the points within the mesh into two groups:
+*interior points* and *boundary points*.
+Interior points are those with four neighbours which lie within the boundary,
+while boundary points are those that lie within the boundary
+but which have a neighbour which lies outside the boundary.
+
+Now, when we perform our random walks,
+we only perform them on the boundary points.
+We can thus obtain a good estimate
+for the values of the function at the boundary points.
+
+For the interior points, we can then just use finite differences.
+We will have a sparse system,
+where each interior point is entangled with at most 4 other interior points,
+as well as at most 4 boundary points,
+which contribute to the target values.
+This lets us find all the values of the interior points
+with a single linear solve,
+allowing us to neatly avoid
+having to perform random walks on all of those points.
+
+The benefits of this are two-fold.
+First of all, note that this reduces, asymptotically,
+the amount of random walks we have to perform.
+If our grid were to have spacing $h$ between the nodes,
+then we would originally need to perform $O(Kh^{-2})$ random walks
+(assuming a nice boundary),
+since the amount of points grew as $h^{-2}$.
+But by only performing the walks on the boundary points,
+we cut this down to $O(Kh^{-1})$,
+which can lead to huge savings.
+
+Furthermore, note that boundary points are within $h$ of the boundary,
+just by their definition.
+Thus, the amount of steps necessary for a random walk to converge
+should take less time for boundary points than interior points.
+So many walks will converge much faster.
 
 ### The coupled set of equations.
 
-Here's the derivation.
+However, the random walks can still take a while to converge.
+If a random walk at a boundary point,
+it can still randomly walk into the centre of the region,
+and could thus take a while to actually reach the boundary.
+
+To avoid this, we can stop our walks early if they reach the boundary.
+If the random walk reaches a boundary point,
+then the expectation value of that random walk
+is the same as the expectation value of random walks from that boundary point.
+Thus, there is no need to continue the random walks.
+
+In practice, this can be implemented in two ways,
+in an explicit or an implicit way.
+We run the random walks until we hit the boundary or another boundary point.
+We can then use the resulting numbers in two ways.
+
+We can index a vector based on our boundary points,
+creating a vector $\R^{B}$, where $B$ is the number of boundary points.
+This lets us assign a real number to each boundary point.
+Let $b_i$ be the total of the values of random walks starting at a given point $i$.
+
+Normally, we then set $u = \frac{1}{K}b$.
+This lets us solve the system directly.
+
+Now, let $F\in\N^{B\times B}$ be a matrix of integers.
+$F_{i,j}$ is the number of random walks
+which start at the boundary point $i$ and end at the boundary point $j$.
+
+The explicit way of finding $u$ is then
+by taking $u=\frac{1}{K^2}Fb + \frac{1}{K}b$.
+This lets us find $u$ explicitly.
+
+We can also use an implicit form.
+We can take $u=\frac{1}{K}Fu + \frac{1}{K}b$.
+This requires solving a linear system,
+and usually performs better than the above.
 
 ### The random walk, and boundary detection.
 

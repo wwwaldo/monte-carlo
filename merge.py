@@ -8,6 +8,7 @@ from fd import *
 
 fprefix = "circle"
 fprefix = "squiggly"
+use_shelf = False
 
 class SetWithCartesianBoundary():
     '''
@@ -392,20 +393,21 @@ if __name__ == '__main__':
     import shelve 
     data = None
     
-    for N in [40,150]:#,500]:
+    for N in [40]:#,150]:#,500]:
     # for N in [50,100,200]:
-        for nsamples in [25, 100, 400]:
+        for nsamples in [25]:#, 100, 400]:
             print(N,nsamples)
             data = None
             dstring = fprefix + 'data.dat'
             if fprefix == 'squiggly':
                 dstring = 'data.dat'
             fstring = fprefix + '_N'+str(N)+'_nsamples_'+str(nsamples)
-            with shelve.open(dstring) as shelf:
-                try:
-                    data = shelf[fstring]
-                except Exception as e:
-                    print("Need to regenerate data")
+            if use_shelf:
+                with shelve.open(dstring) as shelf:
+                    try:
+                        data = shelf[fstring]
+                    except Exception as e:
+                        print("Need to regenerate data")
 
             boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
             boundary_func = squiggly_domain(0.45)
@@ -425,13 +427,14 @@ if __name__ == '__main__':
                 lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
             )
 
-            if data is None:
+            if not use_shelf or data is None:
                 simulator.simulate()
                 u = simulator.solve_coupling()
 
                 # shelve the data 
-                with shelve.open(dstring) as shelf:
-                    shelf[fstring] = u
+                if use_shelf:
+                    with shelve.open(dstring) as shelf:
+                        shelf[fstring] = u
                 data = u
 
             u = data
