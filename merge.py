@@ -1,5 +1,5 @@
 import matplotlib as mpl
-mpl.use('Agg')
+#mpl.use('Agg')
 import numpy as np
 import matplotlib.pyplot as plt
 import traceback
@@ -285,12 +285,18 @@ class MonteCarloSimulator():
             self.g = lambda x, y: 0. # laplacian
 
 
-    def simulate_point(self, pt):
+    def simulate_point(self, pt, plotting=False):        
+        if plotting:
+            fig, ax = plt.subplots()
+        
+        
         dt = self.dt
         
         pt_index = self.domain.get_index(pt)
 
+        
         for i in range(self.nsamples): #self.nsamples
+            pathx, pathy = [], []
             x, y = pt # reset the point location
             
             for j in itertools.count():
@@ -304,7 +310,7 @@ class MonteCarloSimulator():
                     self.ofreq += 1
 
                     #print(f"{j}, g(j) is {self.g(x,y)}")
-                    self.total_boundary_values[pt_index] += self.g(x, y)
+                    self.total_boundary_values[pt_index] += self.g(x, y)                    
                     break
 
                 """# Did I hit the grid boundary?
@@ -313,11 +319,34 @@ class MonteCarloSimulator():
                     self.bfreq += 1
                     index = self.domain.get_index(bdry_pt)
                     self.frequencies[pt_index, index] += 1
+                    pathx, pathy = [], []
                     break"""
                 
+                pathx.append(x)
+                pathy.append(y)
                 continue
 
+            # plot a single path
+            if plotting and pathx:
+                ax.plot(pathx, pathy)
+                ax.plot(pathx[-1], pathy[-1], 'ro')
+                
+    
+
         print(f" Coupled: {self.bfreq}, Outside: {self.ofreq}")
+        if plotting:
+            ax.plot(pt[0], pt[1],'bo') # original location
+            #xlim, ylim = ax.get_xlim(), ax.get_ylim()
+
+            # plot the boundary
+            ax.scatter(self.domain.bdry_X, self.domain.bdry_Y, s=2.0, c='b')
+            
+
+            #ax.set_xlim(xlim)
+            #ax.set_ylim(ylim)
+
+            return fig, ax
+
 
     
     

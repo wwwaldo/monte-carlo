@@ -1,4 +1,5 @@
 from merge import * 
+import matplotlib.pyplot as plt
 
 # Literally copied from merge
 
@@ -6,7 +7,7 @@ np.random.seed(0)
 
 if __name__ == '__main__':
     Ns = [40]
-    nsamples_list = [400]
+    nsamples_list = [10]
 
 
     for N in Ns:
@@ -29,8 +30,27 @@ if __name__ == '__main__':
                 lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
             )
 
+            #for i, el in enumerate(zip(domain.bdry_X, domain.bdry_Y)):
+            #    plt.scatter(el[0], el[1], c=np.array([ i / len(domain.bdry_X), i / len(domain.bdry_X), i / len(domain.bdry_X)]).reshape(1, -1))
+            #
+            #plt.scatter(domain.bdry_X[0], domain.bdry_Y[0], c='r')
+            #plt.show()
+
+            #my_point = domain.bdry_X[-1], domain.bdry_Y[-1]
+            my_point = domain.bdry_X[-20], domain.bdry_Y[-20]
+            fig, ax = simulator.simulate_point(my_point, plotting=True)
+            ax.set_title(f"10 Random Walks on the Circle from {tuple(map(lambda s: round(s, 2), my_point))}")
+            
+            plt.show()
+
+            print('Carolinesim -- exiting early')
+            exit(0)
+
+
             simulator.simulate()
             u = simulator.solve_coupling()
+
+        
 
 
             def find_val(p):
