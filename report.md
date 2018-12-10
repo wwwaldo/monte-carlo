@@ -365,7 +365,10 @@ Results. Figure @fig:random-walks shows 10 random walks on the unit disk startin
 
 ![10 random walks on the unit disk. Left: Without coupling. Right: With coupling. Walks were taken with a random seed of zero. The red dots indicate the final position of the walk. The small blue dots are the boundary points. The large blue dot is the initial position of the walker.](./figures/random-walks.png) {#fig:random-walks}
 
+
 Table 1 shows the maximum absolute error, maximum relative error, and mean relative error for our method on the unit disk, with no coupling. Figure @fig:results-circle plots the numerical and exact solutions for the unit disk, both with and without coupling.
+
+![](./figures/results-circle.png) {#fig:results-circle}
 
 Table 2 shows the error for our method with coupling. Contrary to what we expected, the max error does not scale with $K$ in our coupled implementation.
 
