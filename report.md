@@ -42,7 +42,7 @@ As such, many methods exist for solving Laplace's Equation.
 One way of solving it in practice is Green's functions.
 However, these are not practical to compute,
 especially with uneven domain boundaries,
-so this approach is not very applicable.
+so this approach is not very applicable [@mattheij2005partial].
 
 There are thus many numerical methods for this problem,
 even for irregular boundaries.
@@ -61,17 +61,7 @@ $$u(x) = E^x [g(\textbf{B}(T))]$$
 
 where $g$ is the same as in the formulation of the Laplace equation above [@chati2001random]. The result is an algorithm which can produce a local solution $u$ at any point $x \in D$, which is not coupled to the solution at other points in $D$, and which is highly parallelizable.
 
-The Expectation of a stochastic process is hard to compute analytically. However, it is pretty easy to simulate numerically, using a pseudorandom number generator. By the Law of Large Numbers, the sample mean will approach the Expectation at a rate of $\frac{1}{\sqrt(K)}$, where $K$ is the number of samples.
-
-In brief, to solve for $u$ at the point $x$, we may perform the following steps:
-
-1. Choose some time-step size $dt$. Simulate a particle performing a random-walk starting from $x$ with time-step size $dt$.
-
-2. Repeat step 1 until the particle moves outside $D$ at the terminal time $T$, at which point we add the value of $g(x(T))$ to the total.
-
-3. Simulate $N$ more particles, and keep track of the total in each simulation.
-
-4. Take the mean of the simulation totals. As $N \rightarrow \infty$, this value approaches the value of the solution $u(x)$.
+The Expectation of a stochastic process is hard to compute analytically. However, it is simple to simulate numerically, using a pseudorandom number generator. By the Law of Large Numbers, the sample mean will approach the Expectation at a rate of $\frac{1}{\sqrt{K}}$, where $K$ is the number of samples.
 
 Other authors have written about theoretical aspects of this or similar problems at an accessible level: Reynolds gives a proof that a random walk on a Cartesian grid can be used to solve Laplace's [@reynolds1965proof], while Lawler gives an exposition relating the 1D Heat equation to SDEs [@lawler2010random].
 
@@ -106,9 +96,19 @@ we get a good unbiased estimator for the solution of the Laplacian.
 And with sufficiently many random walks,
 we closely can approximate the actual solution.
 
+In brief, to solve for $u$ at the point $x$, we may perform the following steps:
+
+1. Choose some time-step size $dt$. Simulate a particle performing a random-walk starting from $x$ with time-step size $dt$.
+
+2. Repeat step 1 until the particle moves outside $D$ at the terminal time $T$, at which point we add the value of $g(x(T))$ to the total.
+
+3. Simulate $N$ more particles, and keep track of the total in each simulation.
+
+4. Take the mean of the simulation totals. As $N \rightarrow \infty$, this value approaches the value of the solution $u(x)$.
+
 ### The Finite Difference Modification
 
-However, the above method has several flaws.
+The above method has several flaws.
 Notably, a random walk takes a lot of time to converge.
 Furthermore, work is not reusable between points.
 After solving the problem at many points,
