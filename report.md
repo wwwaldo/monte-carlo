@@ -17,7 +17,7 @@ geometry: margin=1in
 
 ### Laplace's Equation
 
-A very important and fundamental equation
+A fundamental equation
 in differential equation problems is Laplace's Equation.
 A function $f$ on a domain $D$ is said to satisfy Laplace's Equation if
 $\nabla^{2}f=0$.
@@ -461,13 +461,10 @@ Figure @fig:results-circle and @fig:squiggly plot the numerical and exact soluti
 
 ## Conclusions.
 
-We have now seen that we can use random walks to solve Laplace's Problem.
-While the performance is not the best,
-we still get pretty good results.
-It runs in time roughly proportional to $O\pars{Kh^{-1}}$,
-but it still takes a lot of time to converge.
-With regards to error,
-the average error was roughly proportional to $O\pars{\frac{1}{h\sqrt{K}}}$.
+We have now seen that we can use hybrid random walks to solve Laplace's Problem.
+In spite of the method's observed and asymptotic convergence being worse than other methods, we were surprised by how accurate our overall solution was.
+Our method runs in time roughly proportional to $O\pars{Kh^{-1}}$, but still takes a lot of time to converge.
+With regards to error, the average error was roughly proportional to $O\pars{\frac{1}{h\sqrt{K}}}$.
 This means that in practice, this algorithm is not very efficient,
 but it is interesting from a theoretical standpoint.
 
