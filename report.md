@@ -232,6 +232,7 @@ $K$ \backslash $h^{-1}$ | 25 | 50 | 100
 25 | 0.14277 | 0.12212 | 0.11857
 100 | 0.09681 | 0.07336 | 0.06178
 400 | 0.03782 | 0.02709 | 0.03108
+1600 | 0.01406 | 0.01657 | 0.01441
 
 We also have the mean absolute error.
 
@@ -240,6 +241,7 @@ $K$ \backslash $h^{-1}$ | 25 | 50 | 100
 25 | 0.010997 | 0.006750 | 0.004682
 100 | 0.011937 | 0.005103 | 0.003368
 400 | 0.004551 | 0.001876 | 0.001779
+1600 | 0.001479 | 0.001157 | 0.000858
 
 In both cases, the error can be seen to decrease with $h$
 and to decrease as $K$ increases.
@@ -262,18 +264,21 @@ $K$ \backslash $h^{-1}$ | 25 | 50 | 100
 25 | 1.454 | 1.963 | 4.004
 100 | 6.268 | 8.477 | 25.817
 400 | 23.231 | 35.812 | 68.748
+1600 | 91.341 | 127.997 | 217.419
 
 $K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.653 | 2.278 | 18.498
 100 | 0.877 | 2.252 | 9.256
 400 | 0.589 | 2.979 | 10.776
+1600 | 0.628 | 2.415 | 10.337
 
 $K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 2.107 | 4.240 | 22.503
 100 | 7.146 | 10.728 | 35.0722
 400 | 23.820 | 38.791 | 79.524
+1600 | 91.969 | 130.412 | 227.759
 
 The different parts scaled differently.
 The linear system solve was independent of $K$, as expected,
@@ -290,7 +295,65 @@ Note that because the random walks take random amounts of time,
 the resulting times are also random,
 and have a pretty high variance.
 
-Here is where Dmitry puts in some data.
+We also ran some tests with a much more uneven domain.
+This one was defined by a very heavily oscillatory set of sinusoidals,
+resulting in a very uneven boundary.
+
+The maximum errors of those runs are listed below.
+
+$K$ \backslash $h^{-1}$ | 25 | 50
+--- | --- | ---
+25 | 0.17144 | 0.14691
+100 | 0.07071 | 0.08459
+400 | 0.03723 | 0.03352
+
+We also have the mean absolute error.
+
+$K$ \backslash $h^{-1}$ | 25 | 50
+--- | --- | ---
+25 | 0.024012 | 0.021978
+100 | 0.013124 | 0.010827
+400 | 0.007766 | 0.004791
+
+As can be seen, while the mean errors did decrease slightly with $h^{-1}$,
+there was not a large decrease in the error in $h^{-1}$.
+Instead, the most notable decrease was with $K$,
+where it appeared to decrease as $\frac{1}{\sqrt{K}}$.
+
+We also analysed the runtime, just as before.
+
+$K$ \backslash $h^{-1}$ | 25 | 50
+--- | --- | ---
+25 | 31.307 | 51.238
+100 | 144.183 | 216.124
+400 | 556.048 | 910.414
+
+$K$ \backslash $h^{-1}$ | 25 | 50
+--- | --- | ---
+25 | 0.323 | 1.187
+100 | 0.357 | 1.110
+400 | 0.414 | 1.110
+
+$K$ \backslash $h^{-1}$ | 25 | 50
+--- | --- | ---
+25 | 31.630 | 52.425
+100 | 144.539 | 217.234
+400 | 556.462 | 911.524
+
+Again, the linear solve grew as roughly $h^{-2}$,
+which makes sense, just as before.
+The runtime of the random walks also took time roughly proportional to $K$.
+
+However, the random walks also took time proportional to less than $h^{-1}$.
+And they took much more time than on the circular domain.
+The probable reason for that is the unusual domain.
+Near the centre, boundary points are very close to boundaries,
+but most random walks do not quickly converge to the boundary.
+Instead, because the boundary is a very thin slice,
+most random walks take a lot of time.
+This means that points near the centre take a long runtime,
+meaning that the newer points don't add that much time,
+in comparison.
 
 ## Some figures and results.
 
@@ -310,8 +373,8 @@ Table 2 shows the error for our method with coupling. Contrary to what we expect
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 	\hline
-	N & K & Max abs err & Max rel err & Mean rel err \\  
-	\hline 
+	N & K & Max abs err & Max rel err & Mean rel err \\
+	\hline
 	50 & 25 & 0.1167 & 21.6 & 0.033474 \\
 	50 & 100 & 0.07035 & 8.1546 & 0.02415 \\
 	50 & 400 & 0.03810 & 20.683& 0.0302 \\
@@ -328,20 +391,20 @@ Table 2 shows the error for our method with coupling. Contrary to what we expect
 \end{tabular}
 \end{center}
 \caption{ Error of the hybrid random walk method on the unit disk with no coupling for different choices of $K$ and $N$. $K = \inf$ corresponds to using the exact solution as the boundary-value data for our finite-differencing scheme.}
-\end{table} 
+\end{table}
 
 \begin{table}[h!]
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 	\hline
-	N & K & Max abs err & Max rel err & Mean rel err \\  
-	\hline 
+	N & K & Max abs err & Max rel err & Mean rel err \\
+	\hline
     TODO
 	\hline
 \end{tabular}
 \end{center}
 \caption{ Error of the hybrid random walk method on the unit disk with coupling for different choices of $K$ and $N$. }
-\end{table} 
+\end{table}
 
 Figure @fig:squiggly plots the numerical and exact solutions for the TODO domain, as well as the domain itself. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the TODO domain.
 
@@ -351,14 +414,14 @@ Figure @fig:squiggly plots the numerical and exact solutions for the TODO domain
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|}
 	\hline
-	N & K & Max abs err & Max rel err & Mean rel err \\  
-	\hline 
+	N & K & Max abs err & Max rel err & Mean rel err \\
+	\hline
     TODO
 	\hline
 \end{tabular}
 \end{center}
 \caption{ Error of the hybrid random walk method on the unit disk with coupling for different choices of $K$ and $N$. }
-\end{table} 
+\end{table}
 
 ## Conclusions.
 

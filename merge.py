@@ -415,9 +415,9 @@ if __name__ == '__main__':
     import shelve 
     data = None
     
-    for N in [100,200]:
+    for N in [50,100,200]:
     # for N in [50,100,200]:
-        for nsamples in [25, 100, 400]:
+        for nsamples in [1600]: # [25, 100, 400]:
             print(N,nsamples)
             data = None
             dstring = fprefix + 'data.dat'
@@ -432,11 +432,11 @@ if __name__ == '__main__':
                         print("Need to regenerate data")
 
             boundary_func = squiggly_domain(0.45)
-            # boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
-            # h = 2/N
+            boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
             h = 3/N
-            grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
-            # grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.0,-1.0]), np.array([1.0,1.0]), np.array([N+1,N+1]))
+            h = 2/N
+            # grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
+            grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.0,-1.0]), np.array([1.0,1.0]), np.array([N+1,N+1]))
 
             domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
             domain.visualize_boundary()
