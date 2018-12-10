@@ -60,7 +60,7 @@ Ito's formula is the SDE analogue of the chain rule. As a consequence of Ito's f
 
 $$u(x) = E^x [g(\textbf{B}(T))]$$
 
-where $g$ is the same as in the formulation of the Laplace equation above [@chati2001random]. The result is an algorithm which can produce a local solution $u$ at any point $x \in D$, which is not coupled to the solution at other points in $D$, and which is highly parallelizable.
+where $g$ is the same as in the formulation of the Laplace equation above, and $T$ is some terminal time, at which the Wiener process has hit $\partial D$. [@chati2001random]. The result is an algorithm which can produce a local solution $u$ at any point $x \in D$, which is not coupled to the solution at other points in $D$, and which is highly parallelizable.
 
 The Expectation of a stochastic process is hard to compute analytically. However, it is simple to simulate numerically, using a pseudorandom number generator. By the Law of Large Numbers, the sample mean will approach the Expectation at a rate of $\frac{1}{\sqrt{K}}$, where $K$ is the number of samples.
 
@@ -295,7 +295,7 @@ This function satisfies Laplace's Equation,
 meaning we have a target value for $u(x,y)$.
 
 From this, we ran the above procedure to obtain values on the unit disk.
-We could also calculate the values on that unit disk explictly.
+We could also calculate the values on that unit disk explicitly.
 From this, we could then calculate the maximum absolute error.
 
 These runs did not use coupling,
