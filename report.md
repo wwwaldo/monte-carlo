@@ -102,9 +102,9 @@ In brief, to solve for $u$ at the point $x$, we may perform the following steps:
 
 2. Repeat step 1 until the particle moves outside $D$ at the terminal time $T$, at which point we add the value of $g(x(T))$ to the total.
 
-3. Simulate $N$ more particles, and keep track of the total in each simulation.
+3. Simulate $K$ more particles, and keep track of the total in each simulation.
 
-4. Take the mean of the simulation totals. As $N \rightarrow \infty$, this value approaches the value of the solution $u(x)$.
+4. Take the mean of the simulation totals. As $K \rightarrow \infty$, this value approaches the value of the solution $u(x)$.
 
 ### The Finite Difference Modification
 
