@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import traceback
 import itertools
 from fd import *
+from timeit import default_timer as timer
 
 fprefix = "circle"
 fprefix = "squiggly"
@@ -277,7 +278,8 @@ class MonteCarloSimulator():
         self.maxsteps = 100 # tweakable
 
         # so 95% of points take a step of size 0.5 dboundary or less
-        self.dt = 0.25 * (self.domain.dboundary ** 2) 
+        # self.dt = 0.25 * (self.domain.dboundary ** 2) 
+        self.dt = 0.001
 
         if g: 
             self.g = g 
@@ -333,7 +335,7 @@ class MonteCarloSimulator():
                 
     
 
-        print(f" Coupled: {self.bfreq}, Outside: {self.ofreq}")
+        # print(f" Coupled: {self.bfreq}, Outside: {self.ofreq}")
         if plotting:
             ax.plot(pt[0], pt[1],'bo') # original location
             #xlim, ylim = ax.get_xlim(), ax.get_ylim()
@@ -346,7 +348,6 @@ class MonteCarloSimulator():
             #ax.set_ylim(ylim)
 
             return fig, ax
-
 
     
     
@@ -368,20 +369,12 @@ class MonteCarloSimulator():
         # A = ( np.eye( len(X), len(X) ))
         # b = self.total_boundary_values / N + self.frequencies.dot(self.total_boundary_values) / N / N
 
-        print(b)
-
         assert np.linalg.matrix_rank(A) == len(X)
 
         u = np.linalg.solve(A , b)
         gg = np.vectorize(self.g)
 
         soln = gg(X, Y)
-
-        print(self.frequencies)
-        
-        print( (u - soln))
-        print(soln)
-        print(u)
 
         # The L2 norm error:
         error = ((self.domain.dboundary * np.sum(np.abs(u - soln))) - 0.5 * self.domain.dboundary * (np.abs((u -soln))[0] + np.abs((u - soln))[-1]))/len(X)
@@ -422,9 +415,9 @@ if __name__ == '__main__':
     import shelve 
     data = None
     
-    for N in [40]:#,150]:#,500]:
+    for N in [50,100,200]:
     # for N in [50,100,200]:
-        for nsamples in [25]:#, 100, 400]:
+        for nsamples in [25, 100, 400]:
             print(N,nsamples)
             data = None
             dstring = fprefix + 'data.dat'
@@ -438,11 +431,12 @@ if __name__ == '__main__':
                     except Exception as e:
                         print("Need to regenerate data")
 
-            boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
             boundary_func = squiggly_domain(0.45)
-            h = 2/N
-            # grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.0,-1.0]), np.array([1.0,1.0]), np.array([N+1,N+1]))
+            # boundary_func = lambda x: x[0]*x[0] + x[1]*x[1] - 1
+            # h = 2/N
+            h = 3/N
             grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.5,-1.5]), np.array([1.5,1.5]), np.array([N+1,N+1]))
+            # grid_to_vec, vec_to_grid, boundary, grid_to_point = grid_gen(boundary_func, np.array([-1.0,-1.0]), np.array([1.0,1.0]), np.array([N+1,N+1]))
 
             domain = SetWithCartesianBoundary(boundary, grid_to_point, boundary_func, h)
             domain.visualize_boundary()
@@ -456,6 +450,7 @@ if __name__ == '__main__':
                 lambda x, y: x ** 3 + y ** 3 - 3 * x ** 2 * y -3 * y ** 2 * x + 1
             )
 
+            start = timer()
             if not use_shelf or data is None:
                 simulator.simulate()
                 u = simulator.solve_coupling()
@@ -466,6 +461,8 @@ if __name__ == '__main__':
                         shelf[fstring] = u
                 data = u
 
+            mid = timer()
+
             u = data
             def find_val(p):
                 return u[domain.bdry_dict[p]]
@@ -473,8 +470,15 @@ if __name__ == '__main__':
             L, b = gen_L(find_val, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, h)
 
             x = sppl.spsolve(L, b)
+            end = timer()
             x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
+            print("Timing:")
+            print(mid - start)
+            print(end - mid)
+            print(end - start)
+            print("Error:")
             print(np.max(np.abs(x-x_true)))
+            print(np.mean(np.abs(x-x_true)))
             # print(np.max(np.abs(x-x_true)/x_true))
             # print(np.mean(np.abs(x-x_true)/x_true))
 
@@ -487,6 +491,7 @@ if __name__ == '__main__':
 
             x = sppl.spsolve(L, b)
             x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
+            print("True Error:")
             print(np.max(np.abs(x-x_true)))
             # print(np.max(np.abs(x-x_true)/x_true))
             # print(np.mean(np.abs(x-x_true)/x_true))
