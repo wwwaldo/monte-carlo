@@ -32,7 +32,7 @@ A formula.
 
 If we look at it, we see that we can get evaluate the right-hand side of the formula to solve the Laplace's equation at a single point. This is pretty good!
 
-Obviously the expectation of a stochastic process is hard to compute. However, it is pretty easy to simulate. We can use our trusty pseudo-random number generator, courtesy of the good folks at scipy, to simulate a random walk. 
+Obviously the expectation of a stochastic process is hard to compute. However, it is pretty easy to simulate. We can use our trusty pseudo-random number generator, courtesy of the good folks at scipy, to simulate a random walk.
 
 If we simulate enough random walks then we will get a reasonable approximation to the solution. How reasonable is the approximation? By the law of large numbers, the sampling will approach the true expectation at a rate of 1 / sqrt(N), where N is the number of samples.
 
@@ -59,7 +59,7 @@ Perform random walks for u on the boundary of the cartesian mesh.
 Solve the coupled set of equations to get u on the boundary of the mesh.
 Use finite differences to compute the result.
 
-### The finite difference operator.
+### The Finite Difference Modification
 
 However, the above method has several flaws.
 Notably, a random walk takes a lot of time to converge.
@@ -164,15 +164,15 @@ Here is some python. It's pretty simple because I abstracted away all of the det
 
 #### Some details: boundary detection.
 
-There are some subtle problems that arise from using coupled random walks. 
+There are some subtle problems that arise from using coupled random walks.
 
 First, we should notice that points can cross the boundary at any point between boundary points. In this case, which frequency should we update?
 
 We decided to update the frequency of the closer of the two nodes. Something we didn't try: use fractional frequency updates based on a linear interpolant (similar to hard vs. soft k-means).
 
-Second, random walks are discrete, so they can 'tunnel' through the boundary. 
+Second, random walks are discrete, so they can 'tunnel' through the boundary.
 
-We decided to create a 'thickness' to the wall, but only on the interior-facing boundary. The thickness of the wall is such that 95% of all points starting from a boundary node will not tunnel past the wall (based on the standard deviation of the random walk). 
+We decided to create a 'thickness' to the wall, but only on the interior-facing boundary. The thickness of the wall is such that 95% of all points starting from a boundary node will not tunnel past the wall (based on the standard deviation of the random walk).
 
 We throw out points that go past the wall.
 
@@ -180,10 +180,83 @@ Something we didn't try: interpolating between successive point positions to che
 
 ### Other things we didn't try.
 
-Walk-on-spheres
+Another method for speeding up these random walks for Laplace's Problem
+is to use *walk-on-spheres*.
+Note that because the Laplacian is 0 on this region,
+the individual steps of the random walk are identical,
+except that they end up at different points.
+And if we start at a given point,
+if a ball of radius $R$ around that point fits within the boundary,
+then a random walk has an equal probability
+of ending on any point of that circle,
+after every amount of steps.
+Thus, we can skip a lot of steps,
+and just jump to a random point on the ball.
+This lets us cut down on the number of steps required,
+thus vastly speeding up the algorithm.
+However, we did not apply this,
+as we wanted our algorithm to be more generalizable
+to Poisson's Problem.
+
+Another approach we did not use was the boundary-within-a-boundary approach.
 boundary-within-a-boundary
 
 ## Performance
+
+We ran several tests for the performance of this algorithm.
+
+First, we considered the accuracy of this algorithm.
+We ran tests on the example function $g(x,y)=x^3-3xy^2-3x^2y+y^3$.
+This function satisfies Laplace's Equation,
+meaning we have a target value for $u(x,y)$.
+
+From this, we ran the above procedure to obtain values on the unit disk.
+We could also calculate the values on that unit disk explictly.
+From this, we could then calculate the maximum absolute error.
+
+The results are listed in the table below.
+Each entry is the maximum absolute error obtained by running the algorithm
+with that spacing, and with that amount of random walks.
+
+K \ h^{-1} | 25 | 50 | 100
+--- | --- | --- | ---
+25 | 0.14277 | 0.12212 | 0.11857
+100 | 0.09681 | 0.07336 | 0.06178
+400 | 0.03782 | 0.02709 | 0.03108
+
+We also have the mean absolute error.
+
+K \ h^{-1} | 25 | 50 | 100
+--- | --- | --- | ---
+25 | 0.010997 | 0.006750 | 0.004682
+100 | 0.011937 | 0.005103 | 0.003368
+400 | 0.004551 | 0.001876 | 0.001779
+
+We also analysed the runtime,
+run on the same set of values of $K$ and $h$.
+This is organized into three tables.
+The first lists the runtime of the simulation steps,
+the second lists the time to do the subsequent linear solve,
+and the third lists the total runtime.
+All times are listed in seconds.
+
+K \ h^{-1} | 25 | 50 | 100
+--- | --- | --- | ---
+25 | 1.454 | 1.963 | 4.004
+100 | 6.268 | 8.477 | 25.817
+400 | 23.231 | 35.812 | 68.748
+
+K \ h^{-1} | 25 | 50 | 100
+--- | --- | --- | ---
+25 | 0.653 | 2.278 | 18.498
+100 | 0.877 | 2.252 | 9.256
+400 | 0.589 | 2.979 | 10.776
+
+K \ h^{-1} | 25 | 50 | 100
+--- | --- | --- | ---
+25 | 2.107 | 4.240 | 22.503
+100 | 7.146 | 10.728 | 35.0722
+400 | 23.820 | 38.791 | 79.524
 
 Here is where Dmitry puts in some data.
 
