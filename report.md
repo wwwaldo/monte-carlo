@@ -12,25 +12,44 @@ geometry: margin=1in
 \newcommand{\N}[0]{\mathbb{N}}
 
 
-## Background info.
+## Background Info
 
-### Laplace's equation.
+### Laplace's Equation
 
-Everyone knows about Laplace's equation. It's really fundamental. If you really need me to give you the equation for it, then I can give it to you:
+A very important and fundamental equation
+in differential equation problems is Laplace's Equation.
+A function $f$ on a domain $\Omega$ is said to satisfy Laplace's Equation if
+$$\nabla^{2}f=0$.
 
-Here is an equation.
+We also care about Laplace's Problem, wherein we are given a domain $\Omega$
+and a function $g$ on $\partial\Omega$.
+Laplace's Problem is then to find a function $u$
+that satisfies Laplace's Equation and is equal to $g$ on $\partial\Omega$.
 
-Sometimes people shy away from explicitly defining the Laplacian, because it turns out you can define it in odd coordinate systems, and then it looks different. But if you are boring like me and coordinate-dependent then you can use this Cartesian representation of Laplace's:
+Oftentimes, it helps to define Laplace's Equation explicitly,
+within some fixed coordinate system.
+In particular, we care about Cartesian coordinate
+representation of Laplace's Equation:
 
-Here is a second equation.
+$$\left(\frac{\partial^{2}}{\partial x^2}
++\frac{\partial^2}{\partial y^2}\right)u=0$$
 
-We can use it to model steady-states for heat diffusion, but the Laplacian comes up in a lot of contexts. In first-year PDEs we all learn how to solve Laplace's equation with Green's functions, but Green's functions are not practical to compute, especially when domain boundaries are not very good.
+Laplace's Equation is used in many contexts and fields,
+for modelling many different physical models.
+For example, it can be used to model steady states for heat diffusion.
 
-There is a full suite of numerical methods that people have come up with to deal with the problem of solving Laplace's equation with irregular boundaries. We aren't really going to talk about that here.
+As such, many methods exist for solving Laplace's Equation.
+One way of solving it in practice is Green's functions.
+However, these are not practical to compute,
+especially with uneven domain boundaries,
+so this approach is not very applicable.
 
-Instead, what we'll talk about is a slightly different way of solving Laplace's equation, based on the theory of stochastic differential equations.
+There are thus many numerical methods for this problem,
+even for irregular boundaries.
+However, we are going to focus on a specific approach,
+based on the theory of stochastic differential equations.
 
-### The Feynman-Kac formula.
+### The Feynman-Kac Formula
 
 Okay, so if you have a PhD in statistical physics then you probably know about the Feynman-Kac formula. I don't have a PhD in statistical physics, but I have heard about the Feynman-Kac formula. Here is the Feynman-Kac formula.
 
@@ -55,7 +74,7 @@ We should talk a little more about coupling. We decided to introduce coupling in
 
 There's also some cost-savings work in walk-on-spheres, but we didn't look into this.
 
-## How to implement a random walk.
+## Implementing A Random Walk
 
 ### The Basic Method
 
