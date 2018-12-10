@@ -18,13 +18,13 @@ geometry: margin=1in
 
 A very important and fundamental equation
 in differential equation problems is Laplace's Equation.
-A function $f$ on a domain $\Omega$ is said to satisfy Laplace's Equation if
+A function $f$ on a domain $D$ is said to satisfy Laplace's Equation if
 $\nabla^{2}f=0$.
 
-We also care about Laplace's Problem, wherein we are given a domain $\Omega$
-and a function $g$ on $\partial\Omega$.
+We also care about Laplace's Problem, wherein we are given a domain $D$
+and a function $g$ on $\partial D$.
 Laplace's Problem is then to find a function $u$
-that satisfies Laplace's Equation and is equal to $g$ on $\partial\Omega$.
+that satisfies Laplace's Equation and is equal to $g$ on $\partial D$.
 
 Oftentimes, it helps to define Laplace's Equation explicitly,
 within some fixed coordinate system.
@@ -437,16 +437,36 @@ Figure @fig:results-circle and @fig:squiggly plot the numerical and exact soluti
 We have now seen that we can use random walks to solve Laplace's Problem.
 While the performance is not the best,
 we still get pretty good results.
-The algorithm takes a lot of time to converge,
-which means that in practice, it is not very efficient.
+It runs in time roughly proportional to $O\pars{Kh^{-1}}$,
+but it still takes a lot of time to converge.
+With regards to error,
+the average error was roughly proportional to $O\pars{\frac{1}{h\sqrt{K}}}$.
+This means that in practice, this algorithm is not very efficient,
+but it is interesting from a theoretical standpoint.
 
 ## Future Directions.
 
+The coupling could not be made to work for this project.
+The errors behaved much worse once coupling was added.
+Future extensions of this project could try to implement coupling,
+as well as full coupling, and try to make the resulting system work better.
 
+This project also did not implement walk-on-spheres.
+This could vastly speed up the random walks,
+which would heavily improve the runtime.
+
+Our project also did not analyse the memory requirements of this algorithm.
+In theory, it is supposed to take $O\pars{h^{-2}}$ space.
+However, no analysis was done for it.
+
+Furthermore, the random walks are heavily parallelizable,
+and could thus be efficiently loaded onto the GPU.
+This was not done in this project,
+and could greatly improve the performance.
 
 ## Contributions.
 
-Caroline wrote the random walk code and generated the figures in the results section. Dmitry wrote the finite difference code and profiled the algorithm in time and error. 
+Caroline wrote the random walk code and generated the figures in the results section. Dmitry wrote the finite difference code and profiled the algorithm in time and error.
 Both members of the group contributed to the overall decision-making for this project.
 
 # References
