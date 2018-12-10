@@ -205,7 +205,18 @@ as we wanted our algorithm to be more generalizable
 to Poisson's Problem.
 
 Another approach we did not use was the boundary-within-a-boundary approach.
-boundary-within-a-boundary
+Here, we construct another boundary on the inside of the boundary points.
+Then, we can couple our boundary points with the points on this inner boundary,
+which lets us cut the random walks off faster.
+However, then we need to find the values on the inner boundary points.
+This causes us to incur some costs to find those.
+
+The end result of extending this is to fully couple all our points.
+Now, we no longer even use our discretization of the Laplacian.
+Instead, we can now fully couple both our boundary points and interior points,
+which would then result in a much more dense linear system.
+Solving this system would be more complicated than before,
+but it would mean that we could take sufficiently fewer random walk steps.
 
 ## Performance
 
@@ -424,6 +435,12 @@ Figure @fig:squiggly plots the numerical and exact solutions for the TODO domain
 \end{table}
 
 ## Conclusions.
+
+We have now seen that we can use random walks to solve Laplace's Problem.
+While the performance is not the best,
+we still get pretty good results.
+The algorithm takes a lot of time to converge,
+which means that in practice, it is not very efficient.
 
 ## Future Directions.
 
