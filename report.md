@@ -3,6 +3,8 @@ title: MAT1750 Project Report
 author: Caroline Lin and Dmitry Paramonov
 header-includes: |
     \usepackage{gensymb}
+    \usepackage{float}
+    \floatplacement{figure}{H}
 geometry: margin=1in
 ---
 
@@ -292,15 +294,71 @@ Here is where Dmitry puts in some data.
 
 ## Some figures and results.
 
-Here is a test domain: A rectangle with these dimensions, with walks from a single particle.
+Conventions. In all of the following, $N$ is a parameter controlling the fineness of the finite-difference and boundary meshes, and $K$ is the number of random walks per point on the boundary, and $h$ is the distance between adjacent nodes in our mesh. We tested our code on the unit disk and on the level set of {#TODO: insert function name here}. For the unit disk, $h = \frac{2}{N}$ and for the TODO domain, $h = \frac{3}{N}$.
 
-Here is the frequency data for a coupled solution.
+Similar to Chati et al., we test our method using a boundary value function $g(x, y) = x^3 + y^3 - 3 x y^2 - 3 y^2 x + 1$. The solution to Laplace's equation with $g(x, y)$ as the boundary condition is (trivially) $g(x, y)$ itself.
 
-Some more results: Here is the error and plot for our circle data.
+Results. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
 
-Here is the data for the coupled solution. Something seems to be off with the coupled solution.
+![10 random walks on the unit disk. Left: Without coupling. Right: With coupling. Walks were taken with a random seed of zero. The red dots indicate the final position of the walk. The small blue dots are the boundary points. The large blue dot is the initial position of the walker.](./figures/random-walks.png) {#fig:random-walks}
 
-Here is the error and plot for our squiggly domain data with a cusp, and no coupling.
+Table 1 shows the maximum absolute error, maximum relative error, and mean relative error for our method on the unit disk, with no coupling. Figure @fig:results-circle plots the numerical and exact solutions for the unit disk, both with and without coupling.
+
+Table 2 shows the error for our method with coupling. Contrary to what we expected, the max error does not scale with $K$ in our coupled implementation.
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+	\hline
+	N & K & Max abs err & Max rel err & Mean rel err \\  
+	\hline 
+	50 & 25 & 0.1167 & 21.6 & 0.033474 \\
+	50 & 100 & 0.07035 & 8.1546 & 0.02415 \\
+	50 & 400 & 0.03810 & 20.683& 0.0302 \\
+	100 & 25 & 0.1176 & 36.625 & 0.01340 \\
+	100 & 100 & 0.06578 & 7.22489 & 0.00755 \\
+	100 & 400 & 0.01781 & 5.2412 & 0.002187 \\
+    200 & 25 & 0.07451 & 12.5933 & 0.002244 \\
+    200 & 100 & 0.04454 & 15.9934 & 0.0002541 \\
+    200 & 400 & 0.01932 & 4.6903 & 0.000526\\
+    50 & "$\inf$" & 1.22e-14 & 2.5057e-12 & 9.2972e-15 \\
+	100 & "$\inf$" & 5.2402e-14 & 1.1273e-11 & 3.3339e-14 \\
+    200 & "$\inf$" & 1.5876e-13 & 3.9257e-11 & 7.9955e-14\\
+	\hline
+\end{tabular}
+\end{center}
+\caption{ Error of the hybrid random walk method on the unit disk with no coupling for different choices of $K$ and $N$. $K = \inf$ corresponds to using the exact solution as the boundary-value data for our finite-differencing scheme.}
+\end{table} 
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+	\hline
+	N & K & Max abs err & Max rel err & Mean rel err \\  
+	\hline 
+    TODO
+	\hline
+\end{tabular}
+\end{center}
+\caption{ Error of the hybrid random walk method on the unit disk with coupling for different choices of $K$ and $N$. }
+\end{table} 
+
+Figure @fig:squiggly plots the numerical and exact solutions for the TODO domain, as well as the domain itself. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the TODO domain.
+
+![The numerically computed solution for the TODO domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Right: Exact solution.](./figures/squiggly.png) {#fig:squiggly}
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+	\hline
+	N & K & Max abs err & Max rel err & Mean rel err \\  
+	\hline 
+    TODO
+	\hline
+\end{tabular}
+\end{center}
+\caption{ Error of the hybrid random walk method on the unit disk with coupling for different choices of $K$ and $N$. }
+\end{table} 
 
 ## Conclusions.
 
