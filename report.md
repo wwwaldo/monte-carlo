@@ -57,13 +57,24 @@ There's also some cost-savings work in walk-on-spheres, but we didn't look into 
 
 ## How to implement a random walk.
 
-### Summary.
+### The Basic Method
 
-Pick a width, h.
-Construct a Cartesian mesh which lies on the interior.
-Perform random walks for u on the boundary of the cartesian mesh.
-Solve the coupled set of equations to get u on the boundary of the mesh.
-Use finite differences to compute the result.
+For the random walk method,
+we first begin by choosing the points we wish to simulate.
+For each of those points, we then start simulating random walks,
+by taking steps with Gaussian random noise.
+Each random walk runs until it hits the boundary.
+When it does, we evaluate the function on that boundary.
+
+For each point, we perform $K$ random walks.
+Then, we average the values of the function evaluations
+for random walks from that point.
+This averaging is the discrete equivalent of the expectation value above,
+so in expectation, this gets us the value of the solution at that point.
+Thus, by doing sufficiently many random walks,
+we get a good unbiased estimator for the solution of the Laplacian.
+And with sufficiently many random walks,
+we closely can approximate the actual solution.
 
 ### The Finite Difference Modification
 
@@ -77,7 +88,8 @@ requires running many random walks all over again.
 To avoid this, we can use finite differences
 to vastly cut down on the amount of random walks we have to perform.
 
-We begin by constructing a mesh of points within our desired boundary.
+We begin by constructing a mesh of points within our desired boundary,
+with distances between points equal to a parameter $h$.
 Each point will then have 4 neighbours, the points closest to it,
 one in each direction.
 
