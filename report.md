@@ -227,7 +227,7 @@ The results are listed in the table below.
 Each entry is the maximum absolute error obtained by running the algorithm
 with that spacing, and with that amount of random walks.
 
-$K$ \backslash $h^{-1}$ | 25 | 50 | 100
+$K \backslash h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.14277 | 0.12212 | 0.11857
 100 | 0.09681 | 0.07336 | 0.06178
@@ -236,7 +236,7 @@ $K$ \backslash $h^{-1}$ | 25 | 50 | 100
 
 We also have the mean absolute error.
 
-$K$ \backslash $h^{-1}$ | 25 | 50 | 100
+$K \backslash h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.010997 | 0.006750 | 0.004682
 100 | 0.011937 | 0.005103 | 0.003368
@@ -259,21 +259,21 @@ the second lists the time to do the subsequent linear solve,
 and the third lists the total runtime.
 All times are listed in seconds.
 
-$K$ \backslash $h^{-1}$ | 25 | 50 | 100
+$K \backslash h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 1.454 | 1.963 | 4.004
 100 | 6.268 | 8.477 | 25.817
 400 | 23.231 | 35.812 | 68.748
 1600 | 91.341 | 127.997 | 217.419
 
-$K$ \backslash $h^{-1}$ | 25 | 50 | 100
+$K \backslash h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.653 | 2.278 | 18.498
 100 | 0.877 | 2.252 | 9.256
 400 | 0.589 | 2.979 | 10.776
 1600 | 0.628 | 2.415 | 10.337
 
-$K$ \backslash $h^{-1}$ | 25 | 50 | 100
+$K \backslash h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 2.107 | 4.240 | 22.503
 100 | 7.146 | 10.728 | 35.0722
@@ -301,7 +301,7 @@ resulting in a very uneven boundary.
 
 The maximum errors of those runs are listed below.
 
-$K$ \backslash $h^{-1}$ | 25 | 50
+$K \backslash h^{-1}$ | 25 | 50
 --- | --- | ---
 25 | 0.17144 | 0.14691
 100 | 0.07071 | 0.08459
@@ -309,7 +309,7 @@ $K$ \backslash $h^{-1}$ | 25 | 50
 
 We also have the mean absolute error.
 
-$K$ \backslash $h^{-1}$ | 25 | 50
+$K \backslash h^{-1}$ | 25 | 50
 --- | --- | ---
 25 | 0.024012 | 0.021978
 100 | 0.013124 | 0.010827
@@ -322,19 +322,19 @@ where it appeared to decrease as $\frac{1}{\sqrt{K}}$.
 
 We also analysed the runtime, just as before.
 
-$K$ \backslash $h^{-1}$ | 25 | 50
+$K \backslash h^{-1}$ | 25 | 50
 --- | --- | ---
 25 | 31.307 | 51.238
 100 | 144.183 | 216.124
 400 | 556.048 | 910.414
 
-$K$ \backslash $h^{-1}$ | 25 | 50
+$K \backslash h^{-1}$ | 25 | 50
 --- | --- | ---
 25 | 0.323 | 1.187
 100 | 0.357 | 1.110
 400 | 0.414 | 1.110
 
-$K$ \backslash $h^{-1}$ | 25 | 50
+$K \backslash h^{-1}$ | 25 | 50
 --- | --- | ---
 25 | 31.630 | 52.425
 100 | 144.539 | 217.234
@@ -400,7 +400,6 @@ Table 2 shows the error for our method with coupling. Contrary to what we expect
 	N & K & Max abs err & Max rel err & Mean rel err \\
 	\hline
     TODO
-	\hline
 \end{tabular}
 \end{center}
 \caption{ Error of the hybrid random walk method on the unit disk with coupling for different choices of $K$ and $N$. }
@@ -417,7 +416,6 @@ Figure @fig:squiggly plots the numerical and exact solutions for the TODO domain
 	N & K & Max abs err & Max rel err & Mean rel err \\
 	\hline
     TODO
-	\hline
 \end{tabular}
 \end{center}
 \caption{ Error of the hybrid random walk method on the unit disk with coupling for different choices of $K$ and $N$. }
