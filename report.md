@@ -405,7 +405,7 @@ which means that in practice, it is not very efficient.
 
 ## Contributions.
 
-Caroline wrote the random walk code and generated 
-Dmitry wrote the finite difference code and generated a large amount 
+Caroline wrote the random walk code and generated the figures in the results section. Dmitry wrote the finite difference code and profiled the algorithm in time and error. 
+Both members of the group contributed to the overall decision-making for this project.
 
 
