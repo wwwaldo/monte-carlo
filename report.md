@@ -17,7 +17,7 @@ geometry: margin=1in
 
 ### Laplace's Equation
 
-A very important and fundamental equation
+A fundamental equation
 in differential equation problems is Laplace's Equation.
 A function $f$ on a domain $D$ is said to satisfy Laplace's Equation if
 $\nabla^{2}f=0$.
@@ -433,10 +433,10 @@ most random walks take a lot of time.
 This means that points near the centre take a long runtime,
 meaning that the newer points don't add that much time,
 in comparison.
-Simulate $
-Simulate $
-Simulate $
-Simulate $n the Profiling section. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
+
+## Results
+
+Note that tables for the absolute and relative error are given in the Profiling section. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
 
 ![10 random walks on the unit disk. Left: Without coupling. Right: With coupling. Walks were taken with a random seed of zero. The red dots indicate the final position of the walk. The small blue dots are the boundary points. The large blue dot is the initial position of the walker.](./figures/random-walks.png){#fig:random-walks}
 
