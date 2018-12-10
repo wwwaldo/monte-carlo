@@ -294,12 +294,20 @@ We ran tests on the example function $g(x,y)=x^3-3xy^2-3x^2y+y^3$.
 This function satisfies Laplace's Equation,
 meaning we have a target value for $u(x,y)$.
 
-From this, we ran the above procedure to obtain values on the unit disk.
+From this, we ran the above procedure to obtain values on the unit disk,
+for different settings of $K$ and $h$.
 We could also calculate the values on that unit disk explictly.
-From this, we could then calculate the maximum absolute error.
+From this, we could then calculate the absolute error.
 
 These runs did not use coupling,
-and used constant steps for the random walks of length $0.001$.
+as it was found to vastly increase the errors involved.
+With coupling, as $K$ and $h^{-1}$ increased,
+the absolute error was found to converge to $1$ or $1.5$,
+so the method was discarded.
+Instead, all the following analysis uses complete random walks.
+
+Our random walks used steps with standard deviation $0.001$,
+with the same value being used for each value of $K$ and $h$.
 
 The results are listed in the table below.
 Each entry is the maximum absolute error obtained by running the algorithm
