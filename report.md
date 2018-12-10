@@ -18,7 +18,6 @@ geometry: margin=1in
 
 Everyone knows about Laplace's equation. It's really fundamental. If you really need me to give you the equation for it, then I can give it to you:
 
-Here is an equation.
 
 Sometimes people shy away from explicitly defining the Laplacian, because it turns out you can define it in odd coordinate systems, and then it looks different. But if you are boring like me and coordinate-dependent then you can use this Cartesian representation of Laplace's:
 
@@ -383,9 +382,14 @@ Results. Figure @fig:random-walks shows 10 random walks on the unit disk startin
 
 ![10 random walks on the unit disk. Left: Without coupling. Right: With coupling. Walks were taken with a random seed of zero. The red dots indicate the final position of the walk. The small blue dots are the boundary points. The large blue dot is the initial position of the walker.](./figures/random-walks.png){#fig:random-walks}
 
+Figure @fig:squiggly-domain plots the level set of our irregular domain, as well as our Cartesian mesh for $N=40$.
+
+![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/squiggly-domain.png){#fig:squiggly-domain}
+
+Figure @fig:results-circle and @fig:squiggly plot the numerical and exact solutions for the disk and the irregular domain. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the irregular domain.
+
 ![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-circle.png){#fig:results-circle}
 
-Figure @fig:squiggly plots the numerical and exact solutions for the irregular domain, as well as the domain itself. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the irregular domain.
 
 ![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-squiggly.png){#fig:squiggly}
 
@@ -401,7 +405,7 @@ which means that in practice, it is not very efficient.
 
 ## Contributions.
 
-Caroline did this stuff.
-Dmitry did this other stuff.
+Caroline wrote the random walk code and generated 
+Dmitry wrote the finite difference code and generated a large amount 
 
 
