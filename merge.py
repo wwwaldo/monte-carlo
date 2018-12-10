@@ -415,7 +415,7 @@ if __name__ == '__main__':
     import shelve 
     data = None
     
-    for N in [50,100,200]:
+    for N in [100,200]:
     # for N in [50,100,200]:
         for nsamples in [25, 100, 400]:
             print(N,nsamples)

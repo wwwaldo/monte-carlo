@@ -220,11 +220,14 @@ From this, we ran the above procedure to obtain values on the unit disk.
 We could also calculate the values on that unit disk explictly.
 From this, we could then calculate the maximum absolute error.
 
+These runs did not use coupling,
+and used constant steps for the random walks of length $0.001$.
+
 The results are listed in the table below.
 Each entry is the maximum absolute error obtained by running the algorithm
 with that spacing, and with that amount of random walks.
 
-K \ h^{-1} | 25 | 50 | 100
+$K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.14277 | 0.12212 | 0.11857
 100 | 0.09681 | 0.07336 | 0.06178
@@ -232,11 +235,19 @@ K \ h^{-1} | 25 | 50 | 100
 
 We also have the mean absolute error.
 
-K \ h^{-1} | 25 | 50 | 100
+$K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.010997 | 0.006750 | 0.004682
 100 | 0.011937 | 0.005103 | 0.003368
 400 | 0.004551 | 0.001876 | 0.001779
+
+In both cases, the error can be seen to decrease with $h$
+and to decrease as $K$ increases.
+However, the step from $25$ steps to $100$
+doesn't seem to decrease the error significantly.
+It appears that this number of steps just isn't significant for convergence.
+The error is also linear in $h$,
+with the exception of $K=400$ and $h^{-1}=100$.
 
 We also analysed the runtime,
 run on the same set of values of $K$ and $h$.
@@ -246,23 +257,38 @@ the second lists the time to do the subsequent linear solve,
 and the third lists the total runtime.
 All times are listed in seconds.
 
-K \ h^{-1} | 25 | 50 | 100
+$K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 1.454 | 1.963 | 4.004
 100 | 6.268 | 8.477 | 25.817
 400 | 23.231 | 35.812 | 68.748
 
-K \ h^{-1} | 25 | 50 | 100
+$K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 0.653 | 2.278 | 18.498
 100 | 0.877 | 2.252 | 9.256
 400 | 0.589 | 2.979 | 10.776
 
-K \ h^{-1} | 25 | 50 | 100
+$K$ \backslash $h^{-1}$ | 25 | 50 | 100
 --- | --- | --- | ---
 25 | 2.107 | 4.240 | 22.503
 100 | 7.146 | 10.728 | 35.0722
 400 | 23.820 | 38.791 | 79.524
+
+The different parts scaled differently.
+The linear system solve was independent of $K$, as expected,
+since it happens after the simulation.
+And it scaled roughly as $h^{-2}$.
+This makes sense as we have $h^{-2}$ points overall,
+and we are solving a sparse linear system.
+
+The simulation steps scaled linearly in $K$, as expected.
+It also scaled roughly linearly in $h^{-1}$.
+This is as expected, as the number of boundary points
+grows roughly linearly in $h^{-1}$.
+Note that because the random walks take random amounts of time,
+the resulting times are also random,
+and have a pretty high variance.
 
 Here is where Dmitry puts in some data.
 
