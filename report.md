@@ -459,7 +459,7 @@ Figure @fig:results-circle and @fig:squiggly plot the numerical and exact soluti
 
 ![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-squiggly.png){#fig:squiggly}
 
-## Conclusions.
+## Conclusions
 
 We have now seen that we can use hybrid random walks to solve Laplace's Problem.
 In spite of the method's observed and asymptotic convergence being worse than other methods, we were surprised by how accurate our overall solution was.
@@ -468,7 +468,7 @@ With regards to error, the average error was roughly proportional to $O\pars{\fr
 This means that in practice, this algorithm is not very efficient,
 but it is interesting from a theoretical standpoint.
 
-## Future Directions.
+## Future Directions
 
 The coupling could not be made to work for this project.
 The errors behaved much worse once coupling was added.
@@ -488,9 +488,9 @@ and could thus be efficiently loaded onto the GPU.
 This was not done in this project,
 and could greatly improve the performance.
 
-## Contributions.
+## Contributions
 
 Caroline wrote the random walk code and generated the figures in the results section. Dmitry wrote the finite difference code and profiled the algorithm in time and error.
 Both members of the group contributed to the overall decision-making for this project.
 
-# References
+## References
