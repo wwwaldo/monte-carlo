@@ -408,7 +408,7 @@ Figure @fig:squiggly-domain plots the level set of our irregular domain, as well
 
 Figure @fig:results-circle and @fig:squiggly plot the numerical and exact solutions for the disk and the irregular domain. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the irregular domain.
 
-![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-circle.png){#fig:results-circle}
+![The numerically computed solution for the circular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-circle.png){#fig:results-circle}
 
 
 ![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-squiggly.png){#fig:squiggly}
