@@ -384,7 +384,7 @@ Results. Figure @fig:random-walks shows 10 random walks on the unit disk startin
 
 Figure @fig:squiggly-domain plots the level set of our irregular domain, as well as our Cartesian mesh for $N=40$.
 
-![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/squiggly-domain.png){#fig:squiggly-domain}
+![Level set of the irregular domain and Cartesian mesh, $N=40$.](./figures/squiggly-domain.png){ width=290px  #fig:squiggly-domain}
 
 Figure @fig:results-circle and @fig:squiggly plot the numerical and exact solutions for the disk and the irregular domain. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the irregular domain.
 
@@ -402,6 +402,9 @@ The algorithm takes a lot of time to converge,
 which means that in practice, it is not very efficient.
 
 ## Future Directions.
+
+
+
 
 ## Contributions.
 
