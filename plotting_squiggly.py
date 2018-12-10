@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
 
-# Literally copied from merge
+# copied from the plotting file
 
 np.random.seed(0)
 
