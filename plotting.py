@@ -1,5 +1,8 @@
 from merge import * 
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+
 
 # Literally copied from merge
 
@@ -7,7 +10,7 @@ np.random.seed(0)
 
 if __name__ == '__main__':
     Ns = [40]
-    nsamples_list = [10]
+    nsamples_list = [50]
 
 
     for N in Ns:
@@ -36,19 +39,52 @@ if __name__ == '__main__':
             #plt.scatter(domain.bdry_X[0], domain.bdry_Y[0], c='r')
             #plt.show()
 
-            #my_point = domain.bdry_X[-1], domain.bdry_Y[-1]
+            print("Simulating a few points.")
             my_point = domain.bdry_X[-20], domain.bdry_Y[-20]
-            fig, ax = simulator.simulate_point(my_point, plotting=True)
-            ax.set_title(f"10 Random Walks on the Circle from {tuple(map(lambda s: round(s, 2), my_point))}")
-            
-            plt.show()
+            #fig, ax = simulator.simulate_point(my_point) #plotting=True)
+            #ax.set_title(f"10 Random Walks on the Circle from {tuple(map(lambda s: round(s, 2), my_point))}")
+            #plt.show()
+            #exit(0)
 
-            print('Carolinesim -- exiting early')
-            exit(0)
+            # for i in range(len(boundary)):
+            #    pt = grid_to_point( vec_to_grid[i] )
+            #    plt.plot(pt[0], pt[1], 'ro')
+            #plt.show()
 
 
             simulator.simulate()
             u = simulator.solve_coupling()
+
+            # solve on the interior
+            def find_val(p):
+                return u[domain.bdry_dict[p]]
+            L, b = gen_L(find_val, g, grid_to_vec, vec_to_grid, boundary, grid_to_point, h)
+            x = sppl.spsolve(L, b)
+            x_true = np.vectorize(lambda x: f(grid_to_point(x)), signature='(n)->()')(np.array(vec_to_grid))
+
+
+            
+
+            points = [grid_to_point( vec_to_grid[i] ) for i in range(len(vec_to_grid))]
+            X = np.array( list(map( lambda x: x[0], points )) )
+            Y = np.array( list(map( lambda x: x[1], points )) )
+
+
+            fig = plt.figure()
+            ax = fig.gca(projection='3d')
+            ax.set_xlabel('X')
+            ax.set_ylabel('T')
+
+            surf = ax.scatter(X, Y, x_true)
+            s2 = ax.scatter(X, Y, x, c='r')
+            #fig.colorbar(surf, shrink=0.5, aspect=5)
+            plt.show()
+            
+            print('Carolinesim -- exiting early')
+            exit(0)
+
+            # Okay, now I should make some plots of my solution.
+
 
         
 
