@@ -11,7 +11,6 @@ geometry: margin=1in
 \newcommand{\R}[0]{\mathbb{R}}
 \newcommand{\N}[0]{\mathbb{N}}
 
-
 ## Background Info
 
 ### Laplace's Equation
@@ -297,9 +296,9 @@ and to decrease as $K$ increases.
 However, the step from $25$ steps to $100$
 doesn't seem to decrease the error significantly.
 It appears that this number of steps just isn't significant for convergence.
-The error is also linear in $h$,
-with the exception of $K=400$ and $h^{-1}=100$.
-The exact behaviour in $K$ is a bit uncelar, however.
+The error is unclear in $h$,
+but it appears to be proportional to $\frac{1}{\sqrt{K}}$.
+This is seen the most clearly for $h^{-1}=100$.
 
 We also analysed the runtime,
 run on the same set of values of $K$ and $h$.
