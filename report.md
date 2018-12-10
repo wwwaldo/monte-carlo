@@ -65,17 +65,14 @@ The Expectation of a stochastic process is hard to compute analytically. However
 
 Other authors have written about theoretical aspects of this or similar problems at an accessible level: Reynolds gives a proof that a random walk on a Cartesian grid can be used to solve Laplace's [@reynolds1965proof], while Lawler gives an exposition relating the 1D Heat equation to SDEs [@lawler2010random].
 
-## Some previous work on the problem.
+## Previous Work.
 
-Generally speaking Laplace's problem has been tackled from a number of angles. For example, we can use finite elements to solve Laplace's. Here is a link to one such program (fenics).
+There is an abundance of literature on solution methods of Laplace's equation; one popular package is `fenics` [@fenics], but there are many others.
+With respect to random walk methods for Laplace's equation, we based a significant amount of our work on Chati et al., who developed a random walk method for Laplace's, Poisson's, and the Helmholtz equations. A quick search of related work turns up a body of stochastic solution methods. There has also been substantial work on hybrid random walk methods, although using finite-differences seems to be somewhat less popular. 
+The hybrid method with finite elements has been used to solve for transport through porous media, so the range of applications for these methods is fairly diverse [@hoteit].
 
-We based a significant amount of our work on Chati et al., who did a random walk method for Laplace's and Poisson's. A quick search of related work turns up a body of "SDE" or stochastic solution methods. Here are two titles I happened to understand: "Solution of BVPs in electrodynamics by stochastic methods", and "Random Walk Method for Potential Problems".
 
-We should talk a little more about coupling. We decided to introduce coupling in our work, based on discussions with our professor (that's you, the reader). Our coupling approach is based on a standard finite-difference method. More on this in discussion.
-
-There's also some cost-savings work in walk-on-spheres, but we didn't look into this.
-
-## Implementing A Random Walk
+## Implementation
 
 ### The Basic Method
 
@@ -209,31 +206,49 @@ and usually performs better than the above.
 
 ### The random walk, and boundary detection.
 
-Overview.
-The covariance matrix of the 2D gaussian is the identity. At each step we can just sample from this.
+*Overview.* After generating all of the points on the Cartesian grid boundary, we simulate $K$ random walks per boundary point.
+At each iteration of the random walk, we update the position of the walker, and check whether it has landed outside the domain, as well as whether it has hit our induced Cartesian boundary. The walker is allowed to walk until one of these happens, and then either a boundary value vector or a frequency matrix is updated. 
+Slightly simplified Python code for the coupled case is presented below.
 
-Here is some python. It's pretty simple because I abstracted away all of the details.
+Boundary detection for the domain (`domain.isoutside()`) is fairly simple because we chose to use a level-set representation of our domains: we may simply evaluate the level-set function at the random walker's location, and if the function is positive, then we are outside the set.
+Boundary detection for the Cartesian grid was more complicated, since we did not have a closed-form representation of the boundary. We describe some of the subtleties below.
+
+---------------
 
 ```python
-```
+for i in range(self.nsamples):
+    x, y = pt # reset the point location
+    for j in itertools.count(): # equivalent to while(True)
+        x, y = x + np.random.randn() * np.sqrt(dt), y + np.random.randn() * np.sqrt(dt)
 
-#### Some details: boundary detection.
+        if self.domain.is_outside( (x, y) ) >= 0:                                     
+            self.total_boundary_values[pt_index] += self.g(x, y)                    
+            break
+
+        bdry_pt = self.domain.hit_boundary( (x, y) )
+        if bdry_pt is not None:
+            index = self.domain.get_index(bdry_pt)
+            self.frequencies[pt_index, index] += 1
+            break
+```
+---------------
+
+#### More on Boundary Detection
 
 There are some subtle problems that arise from using coupled random walks.
-
-First, we should notice that points can cross the boundary at any point between boundary points. In this case, which frequency should we update?
-
-We decided to update the frequency of the closer of the two nodes. Something we didn't try: use fractional frequency updates based on a linear interpolant (similar to hard vs. soft k-means).
+First, we should notice that points can cross the boundary at any point between boundary points.
+We decided to update the frequency of the closer of the two points. If the random walk landed exactly halfway between two boundary points, we assigned it to one point arbitarily, although this case is negligible because of round-off errors in floating point arithmetic.
+We could have also assigned a fractional frequency to boundary nodes, based on how close the random walker was to each of the two adjacent boundary points. This is similar to the distinction between hard and soft K-means in machine learning, and may have been interesting to explore.
 
 Second, random walks are discrete, so they can 'tunnel' through the boundary.
-
 We decided to create a 'thickness' to the wall, but only on the interior-facing boundary. The thickness of the wall is such that 95% of all points starting from a boundary node will not tunnel past the wall (based on the standard deviation of the random walk).
+In order to create the wall, we check that the walker is within some distance $\delta$ of the boundary point, instead of checking whether the walker lies exactly on the line between two boundary points. This has the problem that we would like to choose $\delta$ large enough to capture all points moving past the boundary, but small enough that the walker can escape from its original position without getting coupled to itself.
 
-We throw out points that go past the wall.
+Our solution was to make the wall one-sided, so that a walker will only be registered as having hit the boundary if it were on the interior side of the boundary.
+To do this, we compute the 4 nearest grid points to the walker at each iteration of the walk, and evaluate the level set function on them. By construction of our grid, one of these grid points must be outside the domain if the walker is located in a square which is exterior to the Cartesian boundary. If this is the case, we don't do the $\delta$ check. Otherwise, we perform the $\delta$ check.
 
-Something we didn't try: interpolating between successive point positions to check for a boundary collision. Based on our setup, it seems expensive.
 
-### Other things we didn't try.
+### Things we didn't try.
 
 Another method for speeding up these random walks for Laplace's Problem
 is to use *walk-on-spheres*.
@@ -427,10 +442,10 @@ Figure @fig:squiggly-domain plots the level set of our irregular domain, as well
 
 Figure @fig:results-circle and @fig:squiggly plot the numerical and exact solutions for the disk and the irregular domain. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the irregular domain.
 
-![The numerically computed solution for the circular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-circle.png){#fig:results-circle}
+![The numerically computed solution for the circular domain, compared against the exact solution. Left: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-circle.png){#fig:results-circle}
 
 
-![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Plot of the domain. Center: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-squiggly.png){#fig:squiggly}
+![The numerically computed solution for the irregular domain, compared against the exact solution. Left: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-squiggly.png){#fig:squiggly}
 
 ## Conclusions.
 
