@@ -11,6 +11,7 @@ geometry: margin=1in
 
 \newcommand{\R}[0]{\mathbb{R}}
 \newcommand{\N}[0]{\mathbb{N}}
+\newcommand{\pars}[1]{ \left( #1 \right) }
 
 ## Background Info
 
@@ -65,10 +66,12 @@ The Expectation of a stochastic process is hard to compute analytically. However
 
 Other authors have written about theoretical aspects of this or similar problems at an accessible level: Reynolds gives a proof that a random walk on a Cartesian grid can be used to solve Laplace's [@reynolds1965proof], while Lawler gives an exposition relating the 1D Heat equation to SDEs [@lawler2010random].
 
-## Previous Work.
+## Previous Work
 
 There is an abundance of literature on solution methods of Laplace's equation; one popular package is `fenics` [@fenics], but there are many others.
-With respect to random walk methods for Laplace's equation, we based a significant amount of our work on Chati et al., who developed a random walk method for Laplace's, Poisson's, and the Helmholtz equations. A quick search of related work turns up a body of stochastic solution methods. There has also been substantial work on hybrid random walk methods, although using finite-differences seems to be somewhat less popular. 
+With respect to random walk methods for Laplace's equation, we based a significant amount of our work on Chati et al., who developed a random walk method for Laplace's, Poisson's, and the Helmholtz equations. A quick search of related work turns up a body of stochastic solution methods. 
+
+There has also been substantial work on hybrid random walk methods, although using finite-differences seems to be somewhat less popular. 
 The hybrid method with finite elements has been used to solve for transport through porous media, so the range of applications for these methods is fairly diverse [@hoteit].
 
 
@@ -204,9 +207,9 @@ We can take $u=\frac{1}{K}Fu + \frac{1}{K}b$.
 This requires solving a linear system,
 and usually performs better than the above.
 
-### The random walk, and boundary detection.
+### Boundary Detection for the Random Walk
 
-*Overview.* After generating all of the points on the Cartesian grid boundary, we simulate $K$ random walks per boundary point.
+After generating all of the points on the Cartesian grid boundary, we simulate $K$ random walks per boundary point.
 At each iteration of the random walk, we update the position of the walker, and check whether it has landed outside the domain, as well as whether it has hit our induced Cartesian boundary. The walker is allowed to walk until one of these happens, and then either a boundary value vector or a frequency matrix is updated. 
 Slightly simplified Python code for the coupled case is presented below.
 
@@ -431,16 +434,17 @@ This means that points near the centre take a long runtime,
 meaning that the newer points don't add that much time,
 in comparison.
 
-## Some figures and results.
-Results. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
+## Results
+
+Note that tables for the absolute and relative error are given in the Profiling section. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
 
 ![10 random walks on the unit disk. Left: Without coupling. Right: With coupling. Walks were taken with a random seed of zero. The red dots indicate the final position of the walk. The small blue dots are the boundary points. The large blue dot is the initial position of the walker.](./figures/random-walks.png){#fig:random-walks}
 
-Figure @fig:squiggly-domain plots the level set of our irregular domain, as well as our Cartesian mesh for $N=40$.
+Figure @fig:squiggly-domain plots the level set of our irregular domain, as well as our Cartesian mesh, for $h=0.075$.
 
 ![Level set of the irregular domain and Cartesian mesh, $N=40$.](./figures/squiggly-domain.png){ width=290px  #fig:squiggly-domain}
 
-Figure @fig:results-circle and @fig:squiggly plot the numerical and exact solutions for the disk and the irregular domain. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. Table 3 shows the error for the irregular domain.
+Figure @fig:results-circle and @fig:squiggly plot the numerical and exact solutions for the disk and the irregular domain. We did not use coupling to compute the numerical solution because of its poor performance on the unit disk. A value of $K = 200, h = 0.05$ was used for the circle, while $h = 0.075$ was used for the irregular domain.
 
 ![The numerically computed solution for the circular domain, compared against the exact solution. Left: Numerically computed solution with no coupling. Center: Exact solution. Right: Overlay.](./figures/results-circle.png){#fig:results-circle}
 
