@@ -433,10 +433,10 @@ most random walks take a lot of time.
 This means that points near the centre take a long runtime,
 meaning that the newer points don't add that much time,
 in comparison.
-
-## Results
-
-Note that tables for the absolute and relative error are given in the Profiling section. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
+Simulate $
+Simulate $
+Simulate $
+Simulate $n the Profiling section. Figure @fig:random-walks shows 10 random walks on the unit disk starting from a boundary point, both with and without coupling.
 
 ![10 random walks on the unit disk. Left: Without coupling. Right: With coupling. Walks were taken with a random seed of zero. The red dots indicate the final position of the walk. The small blue dots are the boundary points. The large blue dot is the initial position of the walker.](./figures/random-walks.png){#fig:random-walks}
 
@@ -453,13 +453,10 @@ Figure @fig:results-circle and @fig:squiggly plot the numerical and exact soluti
 
 ## Conclusions.
 
-We have now seen that we can use random walks to solve Laplace's Problem.
-While the performance is not the best,
-we still get pretty good results.
-It runs in time roughly proportional to $O\pars{Kh^{-1}}$,
-but it still takes a lot of time to converge.
-With regards to error,
-the average error was roughly proportional to $O\pars{\frac{1}{h\sqrt{K}}}$.
+We have now seen that we can use hybrid random walks to solve Laplace's Problem.
+In spite of the method's observed and asymptotic convergence being worse than other methods, we were surprised by how accurate our overall solution was.
+Our method runs in time roughly proportional to $O\pars{Kh^{-1}}$, but still takes a lot of time to converge.
+With regards to error, the average error was roughly proportional to $O\pars{\frac{1}{h\sqrt{K}}}$.
 This means that in practice, this algorithm is not very efficient,
 but it is interesting from a theoretical standpoint.
 
