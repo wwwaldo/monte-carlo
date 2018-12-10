@@ -394,8 +394,8 @@ $K \backslash h^{-1}$ | 25 | 50
 100 | 0.013124 | 0.010827
 400 | 0.007766 | 0.004791
 
-As can be seen, while the mean errors did decrease slightly with $h^{-1}$,
-there was not a large decrease in the error in $h^{-1}$.
+As can be seen, while the mean errors did decrease slightly with $h$,
+it was not particularly noticeable.
 Instead, the most notable decrease was with $K$,
 where it appeared to decrease as $\frac{1}{\sqrt{K}}$.
 
