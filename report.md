@@ -133,6 +133,11 @@ with a single linear solve,
 allowing us to neatly avoid
 having to perform random walks on all of those points.
 
+Formally, we have a discretization $L$ of the Laplacian operator $\nabla^2$.
+We also have a vector $b$ of random walk values,
+but rearranged to be target values on the nearby boundaries.
+Then, we have to solve $Lu=b$.
+
 The benefits of this are two-fold.
 First of all, note that this reduces, asymptotically,
 the amount of random walks we have to perform.
@@ -150,14 +155,14 @@ Thus, the amount of steps necessary for a random walk to converge
 should take less time for boundary points than interior points.
 So many walks will converge much faster.
 
-### The coupled set of equations.
+### The Coupled Finite Differences Method
 
 However, the random walks can still take a while to converge.
-If a random walk at a boundary point,
+If a random walk starts at a boundary point,
 it can still randomly walk into the centre of the region,
 and could thus take a while to actually reach the boundary.
 
-To avoid this, we can stop our walks early if they reach the boundary.
+To avoid this, we can stop our walks early if they reach other boundary points.
 If the random walk reaches a boundary point,
 then the expectation value of that random walk
 is the same as the expectation value of random walks from that boundary point.
@@ -173,7 +178,9 @@ creating a vector $\R^{B}$, where $B$ is the number of boundary points.
 This lets us assign a real number to each boundary point.
 Let $b_i$ be the total of the values of random walks starting at a given point $i$.
 
-Normally, we then set $u = \frac{1}{K}b$.
+To find the values $u$ on the boundary points
+(to be later used as the $b$ value in the main linear system),
+we normally set $u = \frac{1}{K}b$.
 This lets us solve the system directly.
 
 Now, let $F\in\N^{B\times B}$ be a matrix of integers.
@@ -292,6 +299,7 @@ doesn't seem to decrease the error significantly.
 It appears that this number of steps just isn't significant for convergence.
 The error is also linear in $h$,
 with the exception of $K=400$ and $h^{-1}=100$.
+The exact behaviour in $K$ is a bit uncelar, however.
 
 We also analysed the runtime,
 run on the same set of values of $K$ and $h$.
