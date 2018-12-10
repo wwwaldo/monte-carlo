@@ -1,10 +1,14 @@
 ---
-title: Solutions to AER1316 A3
-author: Caroline (Ruoyi) Lin, 1001333112
+title: MAT1750 Project Report
+author: Caroline Lin and Dmitry Paramonov
 header-includes: |
     \usepackage{gensymb}
 geometry: margin=1in
 ---
+
+\newcommand{\R}[0]{\mathbb{R}}
+\newcommand{\N}[0]{\mathbb{N}}
+
 
 ## Background info.
 
