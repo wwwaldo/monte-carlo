@@ -1,5 +1,6 @@
 ---
-title: MAT1750 Project Report
+title: "MAT1750 Project Report: A Hybrid Random-Walk Method for Laplace's Equation on Irregular Domains"
+bibliography: references.bib
 author: Caroline Lin and Dmitry Paramonov
 header-includes: |
     \usepackage{gensymb}
@@ -18,7 +19,7 @@ geometry: margin=1in
 A very important and fundamental equation
 in differential equation problems is Laplace's Equation.
 A function $f$ on a domain $\Omega$ is said to satisfy Laplace's Equation if
-$$\nabla^{2}f=0$.
+$\nabla^{2}f=0$.
 
 We also care about Laplace's Problem, wherein we are given a domain $\Omega$
 and a function $g$ on $\partial\Omega$.
@@ -50,18 +51,29 @@ based on the theory of stochastic differential equations.
 
 ### The Feynman-Kac Formula
 
-Okay, so if you have a PhD in statistical physics then you probably know about the Feynman-Kac formula. I don't have a PhD in statistical physics, but I have heard about the Feynman-Kac formula. Here is the Feynman-Kac formula.
+Analogously to the theory of PDEs, there is a theory of stochastic differential equations (SDEs). Two fundamental concepts in the theory of SDEs are Brownian motion and Ito's formula.
 
-A formula.
+Brownian motion $B(t)$, also known as a Wiener process, is a continuous stochastic process which has the property that $E(B(t)) \sim N(0, t)$ for all times $t \geq 0$; i.e. it is the set of all random walks centered about the origin, distributed normally with a variance equal to $t$ [@roberts2009elementary]. We denote by $E^x(B(t))$ the expectation of Brownian motion which begins from position $x$ instead of the origin. 
 
-If we look at it, we see that we can get evaluate the right-hand side of the formula to solve the Laplace's equation at a single point. This is pretty good!
+Ito's formula is the SDE analogue of the chain rule. As a consequence of Ito's formula, we can derive the Feynman-Kac formula, which relates a family of PDEs with the Expectation of a Wiener process. For Laplace's equation, the formula becomes
 
-Obviously the expectation of a stochastic process is hard to compute. However, it is pretty easy to simulate. We can use our trusty pseudo-random number generator, courtesy of the good folks at scipy, to simulate a random walk.
+$$u(x) = E^x [g(\textbf{B}(T))]$$
 
-If we simulate enough random walks then we will get a reasonable approximation to the solution. How reasonable is the approximation? By the law of large numbers, the sampling will approach the true expectation at a rate of 1 / sqrt(N), where N is the number of samples.
+where $g$ is the same as in the formulation of the Laplace equation above [@chati2001random]. The result is an algorithm which can produce a local solution $u$ at any point $x \in D$, which is not coupled to the solution at other points in $D$, and which is highly parallelizable.
 
-It turns out that other people have written about theoretical aspects of this exact problem, so we refer you to these papers (Random Walk and the Heat
-Equation, Gregory Lawler, and A Proof of the Random-Walk Method for Solving Laplace's Equation in 2-D, J. F. Reynolds) for further reading.
+The Expectation of a stochastic process is hard to compute analytically. However, it is pretty easy to simulate numerically, using a pseudorandom number generator. By the Law of Large Numbers, the sample mean will approach the Expectation at a rate of $\frac{1}{\sqrt(K)}$, where $K$ is the number of samples.
+
+In brief, to solve for $u$ at the point $x$, we may perform the following steps:
+
+1. Choose some time-step size $dt$. Simulate a particle performing a random-walk starting from $x$ with time-step size $dt$.
+
+2. Repeat step 1 until the particle moves outside $D$ at the terminal time $T$, at which point we add the value of $g(x(T))$ to the total.
+
+3. Simulate $N$ more particles, and keep track of the total in each simulation.
+
+4. Take the mean of the simulation totals. As $N \rightarrow \infty$, this value approaches the value of the solution $u(x)$.
+
+Other authors have written about theoretical aspects of this or similar problems at an accessible level: Reynolds gives a proof that a random walk on a Cartesian grid can be used to solve Laplace's [@reynolds1965proof], while Lawler gives an exposition relating the 1D Heat equation to SDEs [@lawler2010random].
 
 ## Some previous work on the problem.
 
@@ -432,10 +444,9 @@ which means that in practice, it is not very efficient.
 
 
 
-
 ## Contributions.
 
 Caroline wrote the random walk code and generated the figures in the results section. Dmitry wrote the finite difference code and profiled the algorithm in time and error. 
 Both members of the group contributed to the overall decision-making for this project.
 
-
+# References
